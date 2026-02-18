@@ -1,0 +1,73 @@
+- generic [ref=e4]:
+  - navigation [ref=e5]:
+    - generic [ref=e6]:
+      - img [ref=e8]
+      - generic [ref=e12]: AI Court
+    - generic [ref=e13]:
+      - button "다크 모드로 전환" [ref=e14]:
+        - img [ref=e15]
+      - link [ref=e17] [cursor=pointer]:
+        - /url: https://github.com/Hwani-Net/ai-court
+        - img [ref=e18]
+  - generic [ref=e22]:
+    - generic [ref=e26]: ⚖️
+    - heading "AI 법정 이 시작됩니다" [level=1] [ref=e27]:
+      - generic [ref=e28]:
+        - text: AI 법정
+        - img [ref=e29]
+      - text: 이 시작됩니다
+    - paragraph [ref=e31]:
+      - text: 최신 AI 기술로 구현된 가상 법정 시뮬레이션.
+      - text: 당신의 사건을 입력하고 7라운드 심리 과정을 직접 경험하세요.
+    - generic [ref=e32]:
+      - generic [ref=e35]: Select Mode
+      - generic [ref=e37]:
+        - button "추천 가상 재판 시뮬레이션 AI 판사·검사·변호사의 3자 대면 원고와 피고 양측 주장을 입력하면 실제 법정처럼 7라운드 공방을 펼치고 판결을 내립니다. Start Now" [ref=e38] [cursor=pointer]:
+          - generic [ref=e39]:
+            - img [ref=e41]
+            - generic [ref=e45]: 추천
+          - generic [ref=e46]:
+            - heading "가상 재판 시뮬레이션" [level=3] [ref=e47]
+            - paragraph [ref=e48]: AI 판사·검사·변호사의 3자 대면
+            - paragraph [ref=e49]: 원고와 피고 양측 주장을 입력하면 실제 법정처럼 7라운드 공방을 펼치고 판결을 내립니다.
+          - generic [ref=e50]:
+            - generic [ref=e51]: Start Now
+            - img [ref=e53]
+        - button "무료 빠른 법률 상담 1분 안에 핵심 법률 요점 정리 복잡한 법률 문제를 질문하면 즉시 관련 법령과 판례를 기반으로 핵심을 요약해드립니다. Start Now" [ref=e55] [cursor=pointer]:
+          - generic [ref=e56]:
+            - img [ref=e58]
+            - generic [ref=e60]: 무료
+          - generic [ref=e61]:
+            - heading "빠른 법률 상담" [level=3] [ref=e62]
+            - paragraph [ref=e63]: 1분 안에 핵심 법률 요점 정리
+            - paragraph [ref=e64]: 복잡한 법률 문제를 질문하면 즉시 관련 법령과 판례를 기반으로 핵심을 요약해드립니다.
+          - generic [ref=e65]:
+            - generic [ref=e66]: Start Now
+            - img [ref=e68]
+        - button "Beta 소송장 분석 계약서·소장 PDF 정밀 분석 법률 문서를 업로드하면 독소 조항이나 유리한/불리한 쟁점을 AI가 정밀 분석합니다. Start Now" [ref=e70] [cursor=pointer]:
+          - generic [ref=e71]:
+            - img [ref=e73]
+            - generic [ref=e76]: Beta
+          - generic [ref=e77]:
+            - heading "소송장 분석" [level=3] [ref=e78]
+            - paragraph [ref=e79]: 계약서·소장 PDF 정밀 분석
+            - paragraph [ref=e80]: 법률 문서를 업로드하면 독소 조항이나 유리한/불리한 쟁점을 AI가 정밀 분석합니다.
+          - generic [ref=e81]:
+            - generic [ref=e82]: Start Now
+            - img [ref=e84]
+      - generic [ref=e86]:
+        - generic [ref=e87]:
+          - generic [ref=e88]: GPT-4o
+          - generic [ref=e89]: AI 엔진
+        - generic [ref=e90]:
+          - generic [ref=e93]: 7단계
+          - generic [ref=e94]: 재판 라운드
+        - generic [ref=e95]:
+          - generic [ref=e98]: 3인
+          - generic [ref=e99]: 법정 역할
+        - generic [ref=e100]:
+          - generic [ref=e103]: 8개+
+          - generic [ref=e104]: 법률 분야
+  - contentinfo [ref=e105]:
+    - paragraph [ref=e106]: ⚠️ AI Court는 법률 정보 제공 목적이며 실제 법률 자문이 아닙니다.
+    - paragraph [ref=e107]: © 2024 AI Court. Powered by OpenAI & Cloudflare Pages.

@@ -80,212 +80,148 @@ function LandingHero({ onStart, theme, onToggleTheme }: {
   onToggleTheme: () => void
 }) {
   return (
-    <div className="min-h-screen flex flex-col relative overflow-hidden">
+    <div className="min-h-screen flex flex-col relative overflow-hidden bg-[var(--bg-primary)]">
       {/* Background ambient orbs */}
-      <div className="absolute inset-0 pointer-events-none" aria-hidden>
+      <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden>
         <div
-          className="absolute w-[500px] h-[500px] rounded-full"
+          className="absolute w-[600px] h-[600px] rounded-full mix-blend-screen opacity-10 blur-3xl"
           style={{
-            top: '-15%', left: '-10%',
-            background: 'radial-gradient(circle, rgba(201,168,76,0.07) 0%, transparent 70%)',
-            animation: 'float-orb 8s ease-in-out infinite',
+            top: '-20%', left: '-10%',
+            background: 'radial-gradient(circle, var(--accent-gold) 0%, transparent 70%)',
+            animation: 'float 8s ease-in-out infinite',
           }}
         />
         <div
-          className="absolute w-[400px] h-[400px] rounded-full"
+          className="absolute w-[500px] h-[500px] rounded-full mix-blend-screen opacity-10 blur-3xl"
           style={{
-            bottom: '10%', right: '-8%',
-            background: 'radial-gradient(circle, rgba(74,144,217,0.06) 0%, transparent 70%)',
-            animation: 'float-orb 10s ease-in-out 2s infinite reverse',
-          }}
-        />
-        <div
-          className="absolute w-[300px] h-[300px] rounded-full"
-          style={{
-            top: '40%', left: '60%',
-            background: 'radial-gradient(circle, rgba(224,82,82,0.04) 0%, transparent 70%)',
-            animation: 'float-orb 12s ease-in-out 4s infinite',
+            bottom: '10%', right: '-15%',
+            background: 'radial-gradient(circle, var(--defense) 0%, transparent 70%)',
+            animation: 'float 10s ease-in-out 2s infinite reverse',
           }}
         />
         {/* Subtle grid pattern */}
         <div
-          className="absolute inset-0 opacity-[0.025]"
+          className="absolute inset-0 opacity-[0.03]"
           style={{
             backgroundImage: 'linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px)',
-            backgroundSize: '60px 60px',
+            backgroundSize: '40px 40px',
+            maskImage: 'radial-gradient(ellipse at center, black 40%, transparent 100%)',
           }}
         />
       </div>
 
       {/* Top nav */}
-      <nav className="relative flex items-center justify-between px-4 sm:px-8 py-4 border-b" style={{ borderColor: 'var(--border)' }}>
-        <div className="flex items-center gap-2">
+      <nav className="relative flex items-center justify-between px-6 py-5 z-20">
+        <div className="flex items-center gap-3">
           <motion.div
-            animate={{ rotate: [0, -8, 8, 0] }}
-            transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+            className="w-8 h-8 rounded-lg flex items-center justify-center"
+            style={{ background: 'rgba(201,168,76,0.15)', border: '1px solid rgba(201,168,76,0.3)' }}
+            whileHover={{ rotate: 180 }}
+            transition={{ duration: 0.8, ease: "easeInOut" }}
           >
-            <Scale size={22} style={{ color: 'var(--accent-gold)' }} />
+            <Scale size={18} style={{ color: 'var(--accent-gold)' }} />
           </motion.div>
-          <span className="font-bold text-lg" style={{ fontFamily: 'Playfair Display, serif', color: 'var(--accent-gold)' }}>
+          <span className="font-bold text-xl tracking-tight" style={{ fontFamily: 'Playfair Display, serif', color: 'var(--accent-gold)' }}>
             AI Court
           </span>
         </div>
         <div className="flex items-center gap-3">
+          <ThemeToggleBtn theme={theme} onToggle={onToggleTheme} />
           <a
             href="https://github.com/Hwani-Net/ai-court"
             target="_blank"
             rel="noopener noreferrer"
             className="p-2 rounded-lg hover:bg-white/5 transition-colors"
-            title="GitHub"
           >
             <Github size={18} style={{ color: 'var(--text-muted)' }} />
           </a>
-          <ThemeToggleBtn theme={theme} onToggle={onToggleTheme} />
-          <motion.span
-            animate={{ opacity: [1, 0.6, 1] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className="text-xs px-3 py-1 rounded-full"
-            style={{ background: 'rgba(201,168,76,0.15)', color: 'var(--accent-gold)', border: '1px solid rgba(201,168,76,0.3)' }}
-          >
-            Beta
-          </motion.span>
         </div>
       </nav>
 
-      {/* Hero */}
-      <div className="relative flex-1 flex flex-col items-center justify-center px-4 sm:px-8 py-10 sm:py-14 text-center">
-        {/* Gavel icon with animation */}
+      {/* Hero Content */}
+      <div className="relative flex-1 flex flex-col items-center justify-center px-4 pb-12 z-10 w-full max-w-5xl mx-auto">
         <motion.div
-          initial={{ opacity: 0, scale: 0.5, rotate: -20 }}
-          animate={{ opacity: 1, scale: 1, rotate: 0 }}
-          transition={{ duration: 0.7, type: 'spring', bounce: 0.4 }}
-          className="mb-6 relative"
-        >
-          <div
-            className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl flex items-center justify-center mx-auto"
-            style={{
-              background: 'linear-gradient(135deg, rgba(201,168,76,0.2) 0%, rgba(201,168,76,0.05) 100%)',
-              border: '1.5px solid rgba(201,168,76,0.4)',
-              boxShadow: '0 0 40px rgba(201,168,76,0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
-            }}
-          >
-            <span className="text-4xl sm:text-5xl">⚖️</span>
-          </div>
-          {/* Pulse ring */}
-          <motion.div
-            className="absolute inset-0 rounded-2xl"
-            animate={{ scale: [1, 1.15, 1], opacity: [0.4, 0, 0.4] }}
-            transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
-            style={{ border: '1px solid rgba(201,168,76,0.4)' }}
-          />
-        </motion.div>
-
-        {/* Headline */}
-        <motion.h1
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="text-3xl sm:text-5xl md:text-6xl font-bold mb-5 leading-tight"
-          style={{ fontFamily: 'Playfair Display, serif', color: 'var(--text-primary)' }}
-        >
-          AI가 당신의{' '}
-          <span
-            style={{
-              color: 'var(--accent-gold)',
-              textShadow: '0 0 30px rgba(201,168,76,0.4)',
-            }}
-          >
-            법정
-          </span>을 열다
-        </motion.h1>
-
-        {/* Subheadline */}
-        <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.35, duration: 0.5 }}
-          className="text-sm sm:text-base md:text-lg max-w-lg mb-6 leading-relaxed"
-          style={{ color: 'var(--text-secondary)' }}
+          transition={{ duration: 0.8 }}
+          className="text-center w-full"
         >
-          AI 판사·검사·변호사가 실제 법정처럼 당신의 사건을 심리합니다.
-          <br className="hidden sm:block" />
-          법률 상담부터 가상 재판까지, 재판 결과를 미리 예측하세요.
-        </motion.p>
-
-        {/* Feature pills */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.45 }}
-          className="flex flex-wrap items-center justify-center gap-2 mb-10"
-        >
-          {[
-            { icon: '✅', text: '무료 법률 상담' },
-            { icon: '⚔️', text: '가상 재판 시뮬레이션' },
-            { icon: '📄', text: '소송장 분석' },
-          ].map(({ icon, text }) => (
-            <span
-              key={text}
-              className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full"
+          {/* Animated Icon Box */}
+          <div className="relative w-28 h-28 mx-auto mb-8">
+            <motion.div
+              className="absolute inset-0 rounded-3xl"
               style={{
-                background: 'var(--bg-card)',
-                border: '1px solid var(--border)',
-                color: 'var(--text-secondary)',
+                background: 'linear-gradient(135deg, rgba(201,168,76,0.2), rgba(201,168,76,0.05))',
+                border: '1px solid rgba(201,168,76,0.3)',
+                boxShadow: '0 0 40px rgba(201,168,76,0.15)',
               }}
-            >
-              <span>{icon}</span>
-              <span>{text}</span>
-            </span>
-          ))}
-        </motion.div>
-
-        {/* Mode selector label */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          className="text-xs mb-5 tracking-widest uppercase font-medium"
-          style={{ color: 'var(--text-muted)' }}
-        >
-          — 원하는 서비스를 선택하세요 —
-        </motion.p>
-
-        {/* Mode cards */}
-        <ModeSelector onSelect={onStart} />
-
-        {/* Stats bar */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.85 }}
-          className="flex items-stretch mt-12 rounded-2xl overflow-hidden"
-          style={{
-            background: 'var(--bg-card)',
-            border: '1px solid var(--border)',
-            boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
-          }}
-        >
-          {[
-            { value: 'GPT-4o', label: 'AI 엔진' },
-            { value: '7라운드', numericValue: 7, label: '재판 진행' },
-            { value: '3인', numericValue: 3, label: '법정 역할' },
-            { value: '8개', numericValue: 8, label: '법률 분야' },
-          ].map((stat, i, arr) => (
-            <div key={stat.label} className="flex items-center">
-              <div className="px-5 py-4">
-                <StatItem {...stat} index={i} />
-              </div>
-              {i < arr.length - 1 && (
-                <div className="self-stretch w-px" style={{ background: 'var(--border)' }} />
-              )}
+              animate={{ rotate: [0, 5, -5, 0] }}
+              transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+            />
+            {/* Spinning Ring */}
+            <div className="absolute inset-[-4px] rounded-[28px] border border-[rgba(201,168,76,0.2)] animate-[spin_10s_linear_infinite]" />
+            <div className="absolute inset-0 flex items-center justify-center text-5xl filter drop-shadow-lg">
+              ⚖️
             </div>
-          ))}
+          </div>
+
+          {/* Typography */}
+          <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold mb-6 tracking-tight leading-[1.1]" style={{ fontFamily: 'Playfair Display, serif' }}>
+            <span className="block text-[var(--accent-gold)] relative inline-block">
+              AI 법정
+              <svg className="absolute -bottom-2 left-0 w-full h-3 text-[var(--accent-gold)] opacity-30" viewBox="0 0 100 10" preserveAspectRatio="none">
+                <path d="M0 5 Q 50 10 100 5 L 100 0 Q 50 5 0 0 Z" fill="currentColor" />
+              </svg>
+            </span>
+            <span className="text-[var(--text-primary)]">이 시작됩니다</span>
+          </h1>
+
+          <p className="text-sm sm:text-lg text-[var(--text-secondary)] mb-10 max-w-2xl mx-auto leading-relaxed">
+            최신 AI 기술로 구현된 가상 법정 시뮬레이션.<br className="hidden sm:block"/>
+            당신의 사건을 입력하고 <span className="text-[var(--accent-gold)] font-medium">7라운드 심리 과정</span>을 직접 경험하세요.
+          </p>
+
+          {/* Mode Selector Section */}
+          <div className="w-full max-w-4xl mx-auto">
+            <div className="flex items-center gap-4 mb-6">
+              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[var(--border)] to-transparent" />
+              <span className="text-xs font-semibold tracking-widest text-[var(--accent-gold)] uppercase">Select Mode</span>
+              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[var(--border)] to-transparent" />
+            </div>
+            
+            <ModeSelector onSelect={onStart} />
+
+            {/* Stats Bar */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+              className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4"
+            >
+              {[
+                { label: 'AI 엔진', value: 'GPT-4o' },
+                { label: '재판 라운드', value: '7단계', numericValue: 7 },
+                { label: '법정 역할', value: '3인', numericValue: 3 },
+                { label: '법률 분야', value: '8개+', numericValue: 8 },
+              ].map((stat, i) => (
+                <div
+                  key={stat.label}
+                  className="p-4 rounded-xl border border-[var(--border)] bg-[var(--bg-card)]/50 backdrop-blur-sm card-hover flex flex-col items-center justify-center gap-1 group"
+                >
+                  <div className="text-xl sm:text-2xl font-bold text-[var(--accent-gold)] group-hover:scale-110 transition-transform">
+                    {stat.numericValue ? <StatItem value={stat.value} numericValue={stat.numericValue} label="" index={i} /> : stat.value}
+                  </div>
+                  <div className="text-[10px] sm:text-xs text-[var(--text-muted)] font-medium uppercase tracking-wider">{stat.label}</div>
+                </div>
+              ))}
+            </motion.div>
+          </div>
         </motion.div>
       </div>
 
-      {/* Footer */}
-      <footer className="relative text-center py-4 text-xs border-t" style={{ borderColor: 'var(--border)', color: 'var(--text-muted)' }}>
-        ⚠️ AI Court는 법률 정보 제공 목적이며 실제 법률 자문이 아닙니다. 중요한 법적 문제는 변호사와 상담하세요.
+      <footer className="py-6 text-center text-[10px] text-[var(--text-muted)] border-t border-[var(--border)] bg-[var(--bg-secondary)]/50 backdrop-blur-md z-20">
+        <p className="mb-1">⚠️ AI Court는 법률 정보 제공 목적이며 실제 법률 자문이 아닙니다.</p>
+        <p>© 2024 AI Court. Powered by OpenAI & Cloudflare Pages.</p>
       </footer>
     </div>
   )

@@ -73,7 +73,10 @@ export async function runTrialRound(
   onChunk: StreamCallback
 ): Promise<void> {
   const context = previousMessages
-    .map(m => `[${m.role.toUpperCase()}]: ${m.content}`)
+    .map(m => {
+      const roleLabel = m.role === 'judge' ? '판사' : m.role === 'prosecutor' ? '검사/원고' : '변호사/피고'
+      return `[${roleLabel}]: ${m.content}`
+    })
     .join('\n')
 
   const caseContext = `사건 유형: ${caseType === 'civil' ? '민사' : '형사'}
@@ -82,30 +85,39 @@ export async function runTrialRound(
 이전 발언:
 ${context}`
 
-  // Round structure: Judge opens → Prosecutor → Defense → Judge rules
+  // Round structure:
+  // 1: Judge opens court
+  // 2: Prosecutor opening statement
+  // 3: Defense opening statement
+  // 4: Judge mid-trial questions
+  // 5: Prosecutor rebuttal
+  // 6: Defense rebuttal
+  // 7: Judge final verdict
   if (round === 1) {
-    // Judge opens
     await streamOpenAI([
       { role: 'system', content: JUDGE_PROMPT },
       { role: 'user', content: `다음 사건의 재판을 시작합니다. 개정을 선언하고 양측에 주장 기회를 주세요.\n${caseContext}` }
     ], (content, done) => onChunk({ role: 'judge', content, done }))
-  } else if (round % 3 === 1) {
-    // Prosecutor's turn
+  } else if (round === 2 || round === 5) {
     await streamOpenAI([
       { role: 'system', content: PROSECUTOR_PROMPT },
-      { role: 'user', content: `다음 사건에서 원고/검사 측 주장을 펼치세요.\n${caseContext}` }
+      { role: 'user', content: `다음 사건에서 원고/검사 측 주장을 펼치세요. 구체적인 법적 근거를 들어 주장하세요.\n${caseContext}` }
     ], (content, done) => onChunk({ role: 'prosecutor', content, done }))
-  } else if (round % 3 === 2) {
-    // Defense's turn
+  } else if (round === 3 || round === 6) {
     await streamOpenAI([
       { role: 'system', content: DEFENSE_PROMPT },
-      { role: 'user', content: `다음 사건에서 피고/변호인 측 반박을 펼치세요.\n${caseContext}` }
+      { role: 'user', content: `다음 사건에서 피고/변호인 측 반박을 펼치세요. 검사 주장의 허점을 지적하고 방어하세요.\n${caseContext}` }
     ], (content, done) => onChunk({ role: 'defense', content, done }))
-  } else {
-    // Judge's ruling
+  } else if (round === 4) {
     await streamOpenAI([
       { role: 'system', content: JUDGE_PROMPT },
-      { role: 'user', content: `양측 주장을 들었습니다. 이 사건에 대한 판결을 내려주세요. 주문, 이유, 권고사항을 포함하세요.\n${caseContext}` }
+      { role: 'user', content: `양측 주장을 들었습니다. 핵심 쟁점을 정리하고 추가 확인이 필요한 사항을 질문하세요.\n${caseContext}` }
+    ], (content, done) => onChunk({ role: 'judge', content, done }))
+  } else {
+    // Round 7: Final verdict
+    await streamOpenAI([
+      { role: 'system', content: JUDGE_PROMPT },
+      { role: 'user', content: `모든 주장을 들었습니다. 최종 판결을 내려주세요.\n형식: [주문] 판결 내용 / [이유] 법적 근거 / [권고사항] 향후 조치\n${caseContext}` }
     ], (content, done) => onChunk({ role: 'judge', content, done }))
   }
 }

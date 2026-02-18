@@ -104,18 +104,27 @@ body {
   backdrop-filter: blur(12px);
   border: 1px solid var(--border);
   border-radius: var(--radius);
+  transition: all 0.3s ease;
+}
+
+.glass-card:hover {
+  border-color: var(--accent-gold-light);
+  box-shadow: 0 8px 32px rgba(201, 168, 76, 0.15);
+  transform: translateY(-4px);
 }
 
 /* Gold divider */
 .gold-divider {
   height: 1px;
   background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
+  box-shadow: 0 0 8px var(--accent-gold-dark);
 }
 
 /* Court wood texture simulation */
 .wood-panel {
   background: linear-gradient(135deg, #1a1208 0%, #2a1e0e 50%, #1a1208 100%);
   border-bottom: 2px solid var(--accent-gold-dark);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 /* Prosecutor / Defense bubbles */

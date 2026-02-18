@@ -1,0 +1,144 @@
+@import "tailwindcss";
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap');
+
+:root {
+  /* Court Dark Theme */
+  --bg-primary: #0d0f14;
+  --bg-secondary: #13161e;
+  --bg-card: #1a1e2a;
+  --bg-card-hover: #1f2435;
+  --bg-glass: rgba(26, 30, 42, 0.8);
+
+  --accent-gold: #c9a84c;
+  --accent-gold-light: #e8c97a;
+  --accent-gold-dark: #a07830;
+
+  --prosecutor: #e05252;
+  --prosecutor-bg: rgba(224, 82, 82, 0.1);
+  --defense: #4a90d9;
+  --defense-bg: rgba(74, 144, 217, 0.1);
+  --judge: #c9a84c;
+  --judge-bg: rgba(201, 168, 76, 0.1);
+
+  --text-primary: #f0ece0;
+  --text-secondary: #a09880;
+  --text-muted: #5a5648;
+
+  --border: rgba(201, 168, 76, 0.15);
+  --border-strong: rgba(201, 168, 76, 0.35);
+
+  --radius: 0.75rem;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-family: 'Noto Sans KR', system-ui, sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  background: 
+    radial-gradient(ellipse at 20% 20%, rgba(201, 168, 76, 0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(74, 144, 217, 0.04) 0%, transparent 50%),
+    var(--bg-primary);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-primary); }
+::-webkit-scrollbar-thumb { background: var(--accent-gold-dark); border-radius: 3px; }
+
+/* Selection */
+::selection { background: rgba(201, 168, 76, 0.3); color: var(--text-primary); }
+
+/* Gavel animation */
+@keyframes gavel-strike {
+  0%, 100% { transform: rotate(-15deg); }
+  50% { transform: rotate(15deg); }
+}
+
+@keyframes pulse-gold {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(201, 168, 76, 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(201, 168, 76, 0); }
+}
+
+@keyframes slide-in-left {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slide-in-right {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes typing-cursor {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.animate-gavel { animation: gavel-strike 0.6s ease-in-out; }
+.animate-pulse-gold { animation: pulse-gold 2s infinite; }
+.animate-slide-left { animation: slide-in-left 0.4s ease-out; }
+.animate-slide-right { animation: slide-in-right 0.4s ease-out; }
+.animate-fade-up { animation: fade-in-up 0.5s ease-out; }
+.typing-cursor::after { content: '|'; animation: typing-cursor 1s infinite; }
+
+/* Glass card */
+.glass-card {
+  background: var(--bg-glass);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+/* Gold divider */
+.gold-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
+}
+
+/* Court wood texture simulation */
+.wood-panel {
+  background: linear-gradient(135deg, #1a1208 0%, #2a1e0e 50%, #1a1208 100%);
+  border-bottom: 2px solid var(--accent-gold-dark);
+}
+
+/* Prosecutor / Defense bubbles */
+.bubble-prosecutor {
+  background: var(--prosecutor-bg);
+  border-left: 3px solid var(--prosecutor);
+  border-radius: 0 var(--radius) var(--radius) var(--radius);
+}
+
+.bubble-defense {
+  background: var(--defense-bg);
+  border-right: 3px solid var(--defense);
+  border-radius: var(--radius) 0 var(--radius) var(--radius);
+}
+
+.bubble-judge {
+  background: var(--judge-bg);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+}
+
+/* Scrollable chat area */
+.chat-area {
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent-gold-dark) transparent;
+}

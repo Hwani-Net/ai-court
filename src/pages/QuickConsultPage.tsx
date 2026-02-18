@@ -6,6 +6,7 @@ import { ShareButton } from '@/components/ShareButton'
 import { quickConsult } from '@/services/openai'
 import type { Message, LegalCategory } from '@/types'
 import { LEGAL_CATEGORIES } from '@/types'
+import { trackQuickConsultStart, trackQuickConsultComplete } from '@/utils/analytics'
 
 // Category emoji map
 const CATEGORY_EMOJI: Record<LegalCategory, string> = {
@@ -73,6 +74,7 @@ export function QuickConsultPage() {
     setMessages(prev => [...prev, userMsg, streamingMsg])
     setInput('')
     setIsLoading(true)
+    trackQuickConsultStart(cat)
 
     try {
       await quickConsult(query, cat, ({ content, done }) => {
@@ -81,6 +83,7 @@ export function QuickConsultPage() {
             prev.map(m => m.id === streamingId ? { ...m, isStreaming: false } : m)
           )
           setIsLoading(false)
+          trackQuickConsultComplete(cat)
         } else {
           setMessages(prev =>
             prev.map(m => m.id === streamingId ? { ...m, content: m.content + content } : m)

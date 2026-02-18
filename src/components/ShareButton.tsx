@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Share2, Copy, Check, MessageCircle } from 'lucide-react'
+import { trackShare } from '@/utils/analytics'
 
 interface ShareButtonProps {
   title?: string
@@ -41,7 +42,7 @@ export function ShareButton({
   return (
     <div className="relative">
       <button
-        onClick={() => setOpen(v => !v)}
+        onClick={() => { setOpen(v => !v); if (!open) trackShare() }}
         className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs transition-all hover:bg-white/10"
         style={{ color: 'var(--text-muted)', border: '1px solid var(--border)' }}
       >

@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { Scale, Zap, FileText, ArrowRight } from 'lucide-react'
 import type { CourtMode } from '@/types'
+import { trackModeSelect } from '@/utils/analytics'
 
 interface ModeSelectorProps {
   onSelect: (mode: CourtMode) => void
@@ -68,7 +69,7 @@ export function ModeSelector({ onSelect }: ModeSelectorProps) {
               boxShadow: `0 20px 40px -10px ${mode.glowColor}, 0 0 0 1px ${mode.borderColor}`,
             }}
             whileTap={{ scale: 0.98 }}
-            onClick={() => onSelect(mode.id)}
+            onClick={() => { trackModeSelect(mode.id); onSelect(mode.id) }}
             className={`relative text-center p-6 rounded-2xl border cursor-pointer group overflow-hidden flex flex-col items-center h-full`}
             style={{
               background: mode.bgGradient,

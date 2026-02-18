@@ -8,6 +8,7 @@ import { VerdictCard, type VerdictAnalysis } from '@/components/VerdictCard'
 import { runTrialRound, analyzeVerdict } from '@/services/openai'
 import { usePDFExport } from '@/hooks/usePDFExport'
 import type { Message, CaseType } from '@/types'
+import { trackTrialStart, trackTrialRound, trackTrialComplete } from '@/utils/analytics'
 
 interface TrialSetup {
   plaintiffSide: string
@@ -51,6 +52,7 @@ export function TrialPage() {
   const startTrial = useCallback(async () => {
     if (!setup.plaintiffSide.trim() || !setup.defendantSide.trim()) return
     setPhase('trial')
+    trackTrialStart(setup.caseType)
     await runRound(1)
   }, [setup])
 
@@ -89,8 +91,10 @@ export function TrialPage() {
               prev.map(m => m.id === streamingId ? { ...m, isStreaming: false } : m)
             )
             setIsLoading(false)
+            trackTrialRound(currentRound, role)
             if (currentRound >= 7) {
               setIsFinished(true)
+              trackTrialComplete(setup.caseType)
               // Auto-trigger structured verdict analysis
               setIsAnalyzing(true)
               setMessages(prev => {

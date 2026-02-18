@@ -5,6 +5,7 @@ import { MessageBubble } from '@/components/MessageBubble'
 import { ShareButton } from '@/components/ShareButton'
 import { analyzeDocument } from '@/services/openai'
 import type { Message } from '@/types'
+import { trackDocumentUpload, trackDocumentAnalyzeStart, trackDocumentAnalyzeComplete } from '@/utils/analytics'
 
 export function DocumentPage() {
   const [file, setFile] = useState<File | null>(null)
@@ -18,6 +19,7 @@ export function DocumentPage() {
   const handleFileUpload = useCallback(async (uploadedFile: File) => {
     setFile(uploadedFile)
     setIsExtracting(true)
+    trackDocumentUpload(uploadedFile.type || 'unknown')
 
     try {
       if (uploadedFile.type === 'application/pdf') {
@@ -60,6 +62,7 @@ export function DocumentPage() {
     if (!extractedText.trim() || isAnalyzing) return
     setIsAnalyzing(true)
     setMessages([])
+    trackDocumentAnalyzeStart()
 
     const streamingId = Date.now().toString()
     const streamingMsg: Message = {
@@ -78,6 +81,7 @@ export function DocumentPage() {
             prev.map(m => m.id === streamingId ? { ...m, isStreaming: false } : m)
           )
           setIsAnalyzing(false)
+          trackDocumentAnalyzeComplete()
         } else {
           setMessages(prev =>
             prev.map(m => m.id === streamingId ? { ...m, content: m.content + content } : m)

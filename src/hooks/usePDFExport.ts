@@ -1,4 +1,5 @@
 import { useRef, useCallback, useState } from 'react'
+import { trackExport } from '@/utils/analytics'
 
 export function usePDFExport() {
   const verdictRef = useRef<HTMLDivElement>(null)
@@ -69,6 +70,7 @@ export function usePDFExport() {
       )
 
       pdf.save(`AI-Court-판결분석-${Date.now()}.pdf`)
+      trackExport('pdf')
     } catch (err) {
       console.error('PDF export error:', err)
     } finally {
@@ -104,6 +106,7 @@ export function usePDFExport() {
       link.download = `AI-Court-판결카드-${Date.now()}.png`
       link.href = canvas.toDataURL('image/png')
       link.click()
+      trackExport('png')
     } catch (err) {
       console.error('Image export error:', err)
     } finally {

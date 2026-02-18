@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Play, RotateCcw, Gavel, ChevronRight } from 'lucide-react'
 import { MessageBubble } from '@/components/MessageBubble'
+import { ShareButton } from '@/components/ShareButton'
 import { runTrialRound } from '@/services/openai'
 import type { Message, CaseType } from '@/types'
 
@@ -9,6 +10,17 @@ interface TrialSetup {
   plaintiffSide: string
   defendantSide: string
   caseType: CaseType
+}
+
+// Round label map
+const ROUND_LABELS: Record<number, { label: string; role: string; color: string }> = {
+  1: { label: '개정', role: '판사', color: '#c9a84c' },
+  2: { label: '원고 주장', role: '검사/원고', color: '#ef4444' },
+  3: { label: '피고 반박', role: '변호사/피고', color: '#3b82f6' },
+  4: { label: '쟁점 정리', role: '판사', color: '#c9a84c' },
+  5: { label: '원고 재반박', role: '검사/원고', color: '#ef4444' },
+  6: { label: '피고 최후 변론', role: '변호사/피고', color: '#3b82f6' },
+  7: { label: '최종 판결', role: '판사', color: '#c9a84c' },
 }
 
 export function TrialPage() {
@@ -37,16 +49,10 @@ export function TrialPage() {
   const runRound = useCallback(async (currentRound: number) => {
     setIsLoading(true)
     const streamingId = Date.now().toString()
-    
-    // Determine role for this round
+
     const roleMap: Record<number, 'judge' | 'prosecutor' | 'defense'> = {
-      1: 'judge',
-      2: 'prosecutor', 
-      3: 'defense',
-      4: 'judge',
-      5: 'prosecutor',
-      6: 'defense',
-      7: 'judge', // Final verdict
+      1: 'judge', 2: 'prosecutor', 3: 'defense',
+      4: 'judge', 5: 'prosecutor', 6: 'defense', 7: 'judge',
     }
     const role = roleMap[currentRound] || 'judge'
 
@@ -111,6 +117,7 @@ export function TrialPage() {
     setSetup({ plaintiffSide: '', defendantSide: '', caseType: 'civil' })
   }
 
+  // ── Setup Phase ──────────────────────────────────────────────────────────
   if (phase === 'setup') {
     return (
       <div className="flex flex-col h-full p-6 overflow-y-auto">
@@ -125,7 +132,7 @@ export function TrialPage() {
               가상 재판 시뮬레이션
             </h2>
             <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-              AI 판사·검사·변호사 3인이 실제 법정처럼 재판을 진행합니다
+              AI 판사·검사·변호사 3인이 실제 법정처럼 7라운드 재판을 진행합니다
             </p>
           </div>
 
@@ -154,94 +161,131 @@ export function TrialPage() {
 
           {/* Plaintiff */}
           <div className="mb-4">
-            <label className="text-sm font-medium mb-2 block" style={{ color: 'var(--prosecutor)' }}>
-              🔴 원고(고소인) 측 주장
+            <label className="text-sm font-medium mb-2 flex items-center gap-1" style={{ color: '#ef4444' }}>
+              <span className="w-2 h-2 rounded-full bg-red-500 inline-block" />
+              원고(고소인) 측 주장
             </label>
             <textarea
               value={setup.plaintiffSide}
               onChange={e => setSetup(s => ({ ...s, plaintiffSide: e.target.value }))}
               placeholder="예: 피고는 2024년 3월 계약한 인테리어 공사를 완료하지 않고 계약금 500만원을 돌려주지 않고 있습니다."
               rows={4}
-              className="w-full px-4 py-3 rounded-xl text-sm resize-none outline-none"
+              className="w-full px-4 py-3 rounded-xl text-sm resize-none outline-none transition-all"
               style={{
                 background: 'var(--bg-card)',
-                border: '1px solid rgba(224,82,82,0.3)',
+                border: '1px solid rgba(239,68,68,0.3)',
                 color: 'var(--text-primary)',
               }}
-              onFocus={e => e.target.style.borderColor = 'var(--prosecutor)'}
-              onBlur={e => e.target.style.borderColor = 'rgba(224,82,82,0.3)'}
+              onFocus={e => e.target.style.borderColor = '#ef4444'}
+              onBlur={e => e.target.style.borderColor = 'rgba(239,68,68,0.3)'}
             />
           </div>
 
           {/* Defendant */}
           <div className="mb-8">
-            <label className="text-sm font-medium mb-2 block" style={{ color: 'var(--defense)' }}>
-              🔵 피고(피고소인) 측 주장
+            <label className="text-sm font-medium mb-2 flex items-center gap-1" style={{ color: '#3b82f6' }}>
+              <span className="w-2 h-2 rounded-full bg-blue-500 inline-block" />
+              피고(피고소인) 측 주장
             </label>
             <textarea
               value={setup.defendantSide}
               onChange={e => setSetup(s => ({ ...s, defendantSide: e.target.value }))}
               placeholder="예: 원고가 추가 공사를 요청하여 비용이 초과되었고, 원고가 먼저 계약을 위반하였습니다."
               rows={4}
-              className="w-full px-4 py-3 rounded-xl text-sm resize-none outline-none"
+              className="w-full px-4 py-3 rounded-xl text-sm resize-none outline-none transition-all"
               style={{
                 background: 'var(--bg-card)',
-                border: '1px solid rgba(74,144,217,0.3)',
+                border: '1px solid rgba(59,130,246,0.3)',
                 color: 'var(--text-primary)',
               }}
-              onFocus={e => e.target.style.borderColor = 'var(--defense)'}
-              onBlur={e => e.target.style.borderColor = 'rgba(74,144,217,0.3)'}
+              onFocus={e => e.target.style.borderColor = '#3b82f6'}
+              onBlur={e => e.target.style.borderColor = 'rgba(59,130,246,0.3)'}
             />
           </div>
 
           <button
             onClick={startTrial}
             disabled={!setup.plaintiffSide.trim() || !setup.defendantSide.trim()}
-            className="w-full py-4 rounded-xl font-bold text-base flex items-center justify-center gap-2 transition-all disabled:opacity-40"
+            className="w-full py-4 rounded-xl font-bold text-base flex items-center justify-center gap-2 transition-all disabled:opacity-40 hover:opacity-90"
             style={{ background: 'var(--accent-gold)', color: '#1a1208' }}
           >
             <Play size={20} />
             재판 시작
           </button>
+
+          {/* Info */}
+          <div className="mt-6 grid grid-cols-4 gap-3 text-center">
+            {Object.entries(ROUND_LABELS).map(([r, info]) => (
+              <div key={r} className="p-2 rounded-lg text-xs" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
+                <div className="font-bold mb-0.5" style={{ color: info.color }}>R{r}</div>
+                <div style={{ color: 'var(--text-muted)' }}>{info.label}</div>
+              </div>
+            ))}
+            <div className="p-2 rounded-lg text-xs" style={{ background: 'rgba(201,168,76,0.1)', border: '1px solid rgba(201,168,76,0.3)' }}>
+              <div className="font-bold mb-0.5" style={{ color: 'var(--accent-gold)' }}>⚖️</div>
+              <div style={{ color: 'var(--text-muted)' }}>판결</div>
+            </div>
+          </div>
         </motion.div>
       </div>
     )
   }
 
+  // ── Trial Phase ──────────────────────────────────────────────────────────
+  const completedRounds = Math.min(round - 1, 7)
+  const progressPct = (completedRounds / 7) * 100
+
   return (
     <div className="flex flex-col h-full">
       {/* Court header */}
-      <div className="wood-panel px-6 py-3 flex items-center justify-between">
+      <div className="wood-panel px-4 py-2.5 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <span className="text-2xl">⚖️</span>
+          <span className="text-xl">⚖️</span>
           <div>
             <div className="text-xs font-medium" style={{ color: 'var(--accent-gold)' }}>
               {setup.caseType === 'civil' ? '민사' : '형사'} 재판 진행 중
             </div>
             <div className="text-xs" style={{ color: 'var(--text-muted)' }}>
-              라운드 {Math.min(round - 1, 7)} / 7
+              라운드 {completedRounds} / 7
             </div>
           </div>
         </div>
-        <button onClick={resetTrial} className="p-2 rounded-lg hover:bg-white/5 transition-colors">
-          <RotateCcw size={16} style={{ color: 'var(--text-muted)' }} />
-        </button>
+        <div className="flex items-center gap-2">
+          {isFinished && <ShareButton text="AI Court에서 가상 재판을 해봤어요! 판결 결과가 놀라워요 😮" />}
+          <button onClick={resetTrial} className="p-2 rounded-lg hover:bg-white/5 transition-colors" title="새 재판">
+            <RotateCcw size={15} style={{ color: 'var(--text-muted)' }} />
+          </button>
+        </div>
+      </div>
+
+      {/* Progress bar */}
+      <div className="h-0.5 w-full" style={{ background: 'var(--border)' }}>
+        <motion.div
+          className="h-full"
+          style={{ background: 'var(--accent-gold)' }}
+          initial={{ width: 0 }}
+          animate={{ width: `${progressPct}%` }}
+          transition={{ duration: 0.5 }}
+        />
       </div>
 
       {/* Role indicators */}
       <div className="flex border-b px-4 py-2 gap-4" style={{ borderColor: 'var(--border)' }}>
-        <div className="flex items-center gap-1 text-xs" style={{ color: 'var(--prosecutor)' }}>
-          <div className="w-2 h-2 rounded-full bg-red-500" />
-          검사/원고
-        </div>
-        <div className="flex items-center gap-1 text-xs" style={{ color: 'var(--judge)' }}>
-          <div className="w-2 h-2 rounded-full bg-yellow-500" />
-          판사
-        </div>
-        <div className="flex items-center gap-1 text-xs" style={{ color: 'var(--defense)' }}>
-          <div className="w-2 h-2 rounded-full bg-blue-500" />
-          변호사/피고
-        </div>
+        {[
+          { color: '#ef4444', dot: 'bg-red-500', label: '검사/원고' },
+          { color: '#c9a84c', dot: 'bg-yellow-500', label: '판사' },
+          { color: '#3b82f6', dot: 'bg-blue-500', label: '변호사/피고' },
+        ].map(r => (
+          <div key={r.label} className="flex items-center gap-1 text-xs" style={{ color: r.color }}>
+            <div className={`w-1.5 h-1.5 rounded-full ${r.dot}`} />
+            {r.label}
+          </div>
+        ))}
+        {!isFinished && round <= 7 && (
+          <div className="ml-auto text-xs px-2 py-0.5 rounded" style={{ background: 'rgba(201,168,76,0.1)', color: 'var(--accent-gold)', border: '1px solid rgba(201,168,76,0.2)' }}>
+            다음: {ROUND_LABELS[round]?.label}
+          </div>
+        )}
       </div>
 
       {/* Messages */}
@@ -257,18 +301,32 @@ export function TrialPage() {
       {/* Controls */}
       <div className="p-4 border-t" style={{ borderColor: 'var(--border)' }}>
         {isFinished ? (
-          <div className="text-center">
-            <p className="text-sm mb-3" style={{ color: 'var(--accent-gold)' }}>
-              ⚖️ 재판이 종결되었습니다
-            </p>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center space-y-3"
+          >
+            {/* Verdict banner */}
+            <div
+              className="py-3 px-4 rounded-xl"
+              style={{ background: 'rgba(201,168,76,0.1)', border: '1px solid rgba(201,168,76,0.3)' }}
+            >
+              <div className="text-2xl mb-1">⚖️</div>
+              <p className="text-sm font-bold" style={{ color: 'var(--accent-gold)' }}>
+                재판이 종결되었습니다
+              </p>
+              <p className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>
+                위의 판결문을 확인하세요
+              </p>
+            </div>
             <button
               onClick={resetTrial}
-              className="px-6 py-2 rounded-xl text-sm font-medium"
+              className="w-full py-3 rounded-xl text-sm font-medium transition-all hover:opacity-80"
               style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
             >
-              새 재판 시작
+              🔄 새 재판 시작
             </button>
-          </div>
+          </motion.div>
         ) : (
           <button
             onClick={handleNextRound}
@@ -279,7 +337,7 @@ export function TrialPage() {
             {isLoading ? (
               <><Gavel size={18} className="animate-bounce" /> 발언 중...</>
             ) : (
-              <><ChevronRight size={18} /> 다음 발언</>
+              <><ChevronRight size={18} /> 다음 발언 ({ROUND_LABELS[round]?.label})</>
             )}
           </button>
         )}

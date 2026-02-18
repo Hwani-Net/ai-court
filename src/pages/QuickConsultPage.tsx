@@ -18,13 +18,14 @@ export function QuickConsultPage() {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
-  const handleSubmit = useCallback(async () => {
-    if (!input.trim() || isLoading) return
+  const handleSubmit = useCallback(async (overrideInput?: string) => {
+    const query = (overrideInput ?? input).trim()
+    if (!query || isLoading) return
 
     const userMsg: Message = {
       id: Date.now().toString(),
       role: 'user',
-      content: input.trim(),
+      content: query,
       timestamp: new Date(),
     }
 
@@ -42,7 +43,7 @@ export function QuickConsultPage() {
     setIsLoading(true)
 
     try {
-      await quickConsult(input.trim(), category, ({ content, done }) => {
+      await quickConsult(query, category, ({ content, done }) => {
         if (done) {
           setMessages(prev =>
             prev.map(m => m.id === streamingId ? { ...m, isStreaming: false } : m)
@@ -110,8 +111,8 @@ export function QuickConsultPage() {
                 ].map((q) => (
                   <button
                     key={q}
-                    onClick={() => { setInput(q); }}
-                    className="text-xs px-3 py-2 rounded-lg border transition-all hover:bg-white/5"
+                    onClick={() => handleSubmit(q)}
+                    className="text-xs px-3 py-2 rounded-lg border transition-all hover:bg-white/5 active:scale-95"
                     style={{ borderColor: 'var(--border)', color: 'var(--text-secondary)' }}
                   >
                     💬 {q}
@@ -131,7 +132,7 @@ export function QuickConsultPage() {
       {/* Input area */}
       <div className="p-4 border-t" style={{ borderColor: 'var(--border)' }}>
         {/* Category selector */}
-        <div className="flex gap-2 mb-3 flex-wrap">
+        <div className="flex gap-2 mb-3 overflow-x-auto pb-1 scrollbar-none" style={{ WebkitOverflowScrolling: 'touch' }}>
           {(Object.entries(LEGAL_CATEGORIES) as [LegalCategory, string][]).map(([key, label]) => (
             <button
               key={key}
@@ -161,7 +162,8 @@ export function QuickConsultPage() {
             }}
             placeholder="법률 질문을 입력하세요... (예: 집주인이 보증금을 안 돌려줍니다)"
             rows={2}
-            className="flex-1 px-4 py-3 rounded-xl text-sm resize-none outline-none transition-all"
+            disabled={isLoading}
+            className="flex-1 px-4 py-3 rounded-xl text-sm resize-none outline-none transition-all disabled:opacity-60"
             style={{
               background: 'var(--bg-card)',
               border: '1px solid var(--border)',
@@ -171,7 +173,7 @@ export function QuickConsultPage() {
             onBlur={e => e.target.style.borderColor = 'var(--border)'}
           />
           <button
-            onClick={handleSubmit}
+            onClick={() => handleSubmit()}
             disabled={isLoading || !input.trim()}
             className="px-4 py-3 rounded-xl font-medium transition-all flex items-center gap-2 disabled:opacity-40"
             style={{

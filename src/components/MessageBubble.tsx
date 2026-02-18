@@ -103,43 +103,43 @@ export function MessageBubble({ message, index }: MessageBubbleProps) {
   const roleConfig = {
     judge: {
       label: '⚖️ 판사',
-      bg: 'rgba(201, 168, 76, 0.08)',
-      border: 'rgba(201, 168, 76, 0.25)',
-      labelColor: '#c9a84c',
+      bg: 'var(--judge-bg)',
+      border: 'var(--border-strong)',
+      labelColor: 'var(--judge)',
       avatar: '⚖️',
-      avatarBg: 'rgba(201,168,76,0.15)',
+      avatarBg: 'var(--judge-bg)',
     },
     prosecutor: {
       label: '🔴 검사/원고',
-      bg: 'rgba(239, 68, 68, 0.08)',
-      border: 'rgba(239, 68, 68, 0.25)',
-      labelColor: '#ef4444',
+      bg: 'var(--prosecutor-bg)',
+      border: 'var(--prosecutor)',
+      labelColor: 'var(--prosecutor)',
       avatar: '검',
-      avatarBg: 'rgba(239,68,68,0.2)',
+      avatarBg: 'var(--prosecutor-bg)',
     },
     defense: {
       label: '🔵 변호사/피고',
-      bg: 'rgba(59, 130, 246, 0.08)',
-      border: 'rgba(59, 130, 246, 0.25)',
-      labelColor: '#3b82f6',
+      bg: 'var(--defense-bg)',
+      border: 'var(--defense)',
+      labelColor: 'var(--defense)',
       avatar: '변',
-      avatarBg: 'rgba(59,130,246,0.2)',
+      avatarBg: 'var(--defense-bg)',
     },
     user: {
       label: '👤 당신',
-      bg: 'rgba(255,255,255,0.04)',
-      border: 'rgba(255,255,255,0.1)',
+      bg: 'var(--bg-card)',
+      border: 'var(--border)',
       labelColor: 'var(--text-secondary)',
       avatar: '나',
-      avatarBg: 'rgba(255,255,255,0.1)',
+      avatarBg: 'var(--bg-card-hover)',
     },
     system: {
       label: '🔔 시스템',
-      bg: 'rgba(255,255,255,0.02)',
-      border: 'rgba(255,255,255,0.06)',
+      bg: 'var(--bg-secondary)',
+      border: 'var(--border)',
       labelColor: 'var(--text-muted)',
       avatar: '!',
-      avatarBg: 'rgba(255,255,255,0.05)',
+      avatarBg: 'var(--bg-secondary)',
     },
   }
 
@@ -175,12 +175,20 @@ export function MessageBubble({ message, index }: MessageBubbleProps) {
         >
           {renderContent(message.content, message.role)}
           
-          {/* Streaming cursor */}
+          {/* Streaming indicator */}
           {message.isStreaming && (
-            <span
-              className="inline-block w-0.5 h-4 ml-1 align-middle animate-pulse"
-              style={{ background: config.labelColor }}
-            />
+            <span className="inline-flex items-center gap-0.5 ml-1 align-middle">
+              {[0, 1, 2].map(i => (
+                <span
+                  key={i}
+                  className="inline-block w-1 h-1 rounded-full"
+                  style={{
+                    background: config.labelColor,
+                    animation: `pulse 1.2s ease-in-out ${i * 0.2}s infinite`,
+                  }}
+                />
+              ))}
+            </span>
           )}
         </div>
       </div>

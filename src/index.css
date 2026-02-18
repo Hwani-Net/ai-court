@@ -223,3 +223,67 @@ body {
     padding-right: env(safe-area-inset-right);
   }
 }
+
+/* ── UX Polish ── */
+
+/* Focus visible ring for keyboard navigation */
+button:focus-visible,
+textarea:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--accent-gold);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Hide scrollbar utility */
+.scrollbar-none {
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* Category chip — prevent shrinking in horizontal scroll */
+.category-chip {
+  flex-shrink: 0;
+}
+
+/* Shimmer skeleton for loading states */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--bg-card) 25%,
+    var(--bg-card-hover) 50%,
+    var(--bg-card) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius);
+}
+
+/* Button active feedback */
+button:not(:disabled):active {
+  transform: scale(0.97);
+}
+
+/* Smooth color transitions for theme switching */
+*, *::before, *::after {
+  transition: background-color 0.25s ease, border-color 0.25s ease, color 0.15s ease;
+}
+
+/* But NOT for transforms/opacity (would break animations) */
+button, a, [class*="motion"] {
+  transition: background-color 0.25s ease, border-color 0.25s ease, color 0.15s ease,
+              transform 0.15s ease, opacity 0.15s ease, box-shadow 0.25s ease;
+}
+
+/* Textarea placeholder */
+textarea::placeholder {
+  color: var(--text-muted);
+  opacity: 0.7;
+}

@@ -97,7 +97,7 @@ export function DocumentPage() {
 
   return (
     <div className="flex flex-col h-full overflow-y-auto custom-scrollbar">
-      <div className="p-4 sm:p-8 max-w-3xl mx-auto w-full">
+      <div className="p-4 sm:p-8 w-full" style={{ maxWidth: '56rem', margin: '0 auto' }}>
         {/* Animated Header */}
         <motion.div 
           initial={{ opacity: 0, y: -10 }}
@@ -139,12 +139,14 @@ export function DocumentPage() {
                 }}
               >
                 <div className="absolute inset-0 bg-[var(--accent-gold)] opacity-0 group-hover:opacity-5 transition-opacity duration-300" />
-                <motion.div 
-                  whileHover={{ scale: 1.1, rotate: 5 }}
-                  className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center bg-[var(--bg-secondary)] border border-[var(--border)] shadow-lg"
-                >
-                  <Upload size={28} style={{ color: 'var(--accent-gold)' }} />
-                </motion.div>
+                <div className="flex justify-center mb-4">
+                  <motion.div 
+                    whileHover={{ scale: 1.1, rotate: 5 }}
+                    className="w-16 h-16 rounded-full flex items-center justify-center bg-[var(--bg-secondary)] border border-[var(--border)] shadow-lg"
+                  >
+                    <Upload size={28} style={{ color: 'var(--accent-gold)' }} />
+                  </motion.div>
+                </div>
                 <p className="text-lg font-medium mb-2 text-[var(--text-primary)] group-hover:text-[var(--accent-gold)] transition-colors">
                   PDF 또는 텍스트 파일 업로드
                 </p>

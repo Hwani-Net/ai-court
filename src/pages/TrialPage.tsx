@@ -184,23 +184,26 @@ export function TrialPage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="max-w-2xl mx-auto w-full p-5"
+          className="w-full p-5 pb-8"
+          style={{ maxWidth: '48rem', margin: '0 auto' }}
         >
           {/* Header */}
           <div className="text-center mb-7">
-            <motion.div
-              initial={{ scale: 0.7, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ type: 'spring', bounce: 0.4 }}
-              className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4"
-              style={{
-                background: 'linear-gradient(135deg, rgba(201,168,76,0.2) 0%, rgba(201,168,76,0.05) 100%)',
-                border: '1.5px solid rgba(201,168,76,0.4)',
-                boxShadow: '0 0 30px rgba(201,168,76,0.12)',
-              }}
-            >
-              <span className="text-3xl">⚔️</span>
-            </motion.div>
+            <div className="flex justify-center mb-4">
+              <motion.div
+                initial={{ scale: 0.7, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: 'spring', bounce: 0.4 }}
+                className="w-16 h-16 rounded-2xl flex items-center justify-center"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(201,168,76,0.2) 0%, rgba(201,168,76,0.05) 100%)',
+                  border: '1.5px solid rgba(201,168,76,0.4)',
+                  boxShadow: '0 0 30px rgba(201,168,76,0.12)',
+                }}
+              >
+                <span className="text-3xl">⚔️</span>
+              </motion.div>
+            </div>
             <h2 className="text-xl font-bold mb-1.5" style={{ color: 'var(--accent-gold)', fontFamily: 'Playfair Display, serif' }}>
               가상 재판 시뮬레이션
             </h2>
@@ -304,7 +307,7 @@ export function TrialPage() {
             <p className="text-xs font-semibold mb-3 tracking-wider uppercase" style={{ color: 'var(--text-muted)' }}>
               추천 시나리오
             </p>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-3">
               {SCENARIOS.map(sc => (
                 <motion.button
                   key={sc.title}

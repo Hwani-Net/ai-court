@@ -106,8 +106,8 @@ export function QuickConsultPage() {
     <div className="flex flex-col h-full">
       {/* Header */}
       <div
-        className="flex items-center justify-between px-4 py-3 border-b"
-        style={{ borderColor: 'var(--border)', background: 'var(--bg-secondary)' }}
+        className="flex items-center justify-between px-6 py-3 border-b w-full"
+        style={{ borderColor: 'var(--border)', background: 'transparent', maxWidth: '64rem', margin: '0 auto' }}
       >
         <div className="flex items-center gap-3">
           <div
@@ -183,7 +183,8 @@ export function QuickConsultPage() {
       </AnimatePresence>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 chat-area">
+      <div className="flex-1 overflow-y-auto chat-area">
+        <div className="px-6 py-4" style={{ maxWidth: '64rem', margin: '0 auto' }}>
         <AnimatePresence>
           {messages.length === 0 && (
             <motion.div
@@ -193,19 +194,21 @@ export function QuickConsultPage() {
               className="flex flex-col items-center justify-center h-full text-center py-8"
             >
               {/* Icon box */}
-              <motion.div
-                initial={{ scale: 0.7, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ type: 'spring', bounce: 0.4 }}
-                className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4"
-                style={{
-                  background: 'linear-gradient(135deg, rgba(201,168,76,0.18) 0%, rgba(201,168,76,0.05) 100%)',
-                  border: '1.5px solid rgba(201,168,76,0.35)',
-                  boxShadow: '0 0 30px rgba(201,168,76,0.1)',
-                }}
-              >
-                <span className="text-3xl">⚖️</span>
-              </motion.div>
+              <div className="flex justify-center mb-4">
+                <motion.div
+                  initial={{ scale: 0.7, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ type: 'spring', bounce: 0.4 }}
+                  className="w-16 h-16 rounded-2xl flex items-center justify-center"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(201,168,76,0.18) 0%, rgba(201,168,76,0.05) 100%)',
+                    border: '1.5px solid rgba(201,168,76,0.35)',
+                    boxShadow: '0 0 30px rgba(201,168,76,0.1)',
+                  }}
+                >
+                  <span className="text-3xl">⚖️</span>
+                </motion.div>
+              </div>
 
               <motion.p
                 initial={{ opacity: 0, y: 8 }}
@@ -272,10 +275,12 @@ export function QuickConsultPage() {
           <MessageBubble key={msg.id} message={msg} index={i} />
         ))}
         <div ref={bottomRef} />
+        </div>
       </div>
 
       {/* Input area */}
-      <div className="p-3 border-t" style={{ borderColor: 'var(--border)' }}>
+      <div className="border-t" style={{ borderColor: 'var(--border)' }}>
+        <div className="px-6 py-3" style={{ maxWidth: '64rem', margin: '0 auto' }}>
         {/* Category selector */}
         <div className="flex gap-1.5 mb-2.5 overflow-x-auto pb-1 scrollbar-none" style={{ WebkitOverflowScrolling: 'touch' }}>
           {(Object.entries(LEGAL_CATEGORIES) as [LegalCategory, string][]).map(([key, label]) => (
@@ -361,6 +366,7 @@ export function QuickConsultPage() {
         <p className="text-[10px] mt-2" style={{ color: 'var(--text-muted)' }}>
           ⚠️ 이 서비스는 법률 정보 제공 목적이며 실제 법률 자문이 아닙니다
         </p>
+        </div>
       </div>
     </div>
   )

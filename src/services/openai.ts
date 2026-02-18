@@ -1,8 +1,6 @@
 // AI Court - OpenAI API Service (via Cloudflare Functions in prod, direct in dev)
 import type { Message, RoleType, LegalCategory, CaseType } from '@/types'
 
-const API_BASE = import.meta.env.VITE_API_BASE || ''
-
 // System prompts for each role
 const JUDGE_PROMPT = `당신은 대한민국 법원의 공정하고 권위 있는 판사입니다.
 역할:
@@ -158,40 +156,56 @@ async function streamOpenAI(
   messages: Array<{ role: string; content: string }>,
   onChunk: (content: string, done: boolean) => void
 ): Promise<void> {
+  const isDev = import.meta.env.DEV
   const apiKey = import.meta.env.VITE_OPENAI_API_KEY
 
-  // In production, use Cloudflare Function; in dev, call directly
-  const endpoint = API_BASE 
-    ? `${API_BASE}/api/chat` 
-    : 'https://api.openai.com/v1/chat/completions'
-
+  // Production: ALWAYS use Cloudflare Functions proxy (API key stays server-side)
+  // Development: use direct OpenAI call with local .env key
+  let endpoint: string
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
   }
-  
-  if (!API_BASE && apiKey) {
+
+  if (isDev && apiKey) {
+    // Dev mode: direct call with local API key
+    endpoint = 'https://api.openai.com/v1/chat/completions'
     headers['Authorization'] = `Bearer ${apiKey}`
+  } else {
+    // Production: use Cloudflare Functions proxy at /api/chat
+    endpoint = '/api/chat'
   }
 
-  const response = await fetch(endpoint, {
-    method: 'POST',
-    headers,
-    body: JSON.stringify({
-      model: 'gpt-4o',
-      messages,
-      stream: true,
-      max_tokens: 600,
-      temperature: 0.8,
-    }),
-  })
+  let response: Response
+  try {
+    response = await fetch(endpoint, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        model: 'gpt-4o',
+        messages,
+        stream: true,
+        max_tokens: 600,
+        temperature: 0.8,
+      }),
+    })
+  } catch (err) {
+    throw new Error(`네트워크 연결 실패: 인터넷 연결을 확인해주세요. (${String(err)})`)
+  }
 
   if (!response.ok) {
-    const error = await response.text()
-    throw new Error(`API Error: ${response.status} - ${error}`)
+    const errorText = await response.text().catch(() => 'Unknown error')
+    if (response.status === 401) {
+      throw new Error('API 인증 실패: 관리자에게 문의해주세요.')
+    } else if (response.status === 429) {
+      throw new Error('요청 한도 초과: 잠시 후 다시 시도해주세요.')
+    } else if (response.status === 500) {
+      throw new Error('서버 오류: 잠시 후 다시 시도해주세요.')
+    }
+    throw new Error(`API 오류 (${response.status}): ${errorText.slice(0, 100)}`)
   }
 
   const reader = response.body?.getReader()
-  if (!reader) throw new Error('No response body')
+  if (!reader) throw new Error('응답 본문이 비어있습니다.')
 
   const decoder = new TextDecoder()
   let buffer = ''

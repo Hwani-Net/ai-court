@@ -34,6 +34,7 @@ export function TrialPage() {
   const [round, setRound] = useState(1)
   const [isLoading, setIsLoading] = useState(false)
   const [isFinished, setIsFinished] = useState(false)
+  const [autoPlay, setAutoPlay] = useState(true)
   const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -83,7 +84,8 @@ export function TrialPage() {
             if (currentRound >= 7) {
               setIsFinished(true)
             } else {
-              setRound(currentRound + 1)
+              const nextRound = currentRound + 1
+              setRound(nextRound)
             }
           } else {
             setMessages(prev =>
@@ -92,16 +94,25 @@ export function TrialPage() {
           }
         }
       )
-    } catch {
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : '알 수 없는 오류'
       setMessages(prev =>
         prev.map(m => m.id === streamingId
-          ? { ...m, content: '⚠️ 오류가 발생했습니다.', isStreaming: false }
+          ? { ...m, content: `⚠️ ${errorMessage}`, isStreaming: false }
           : m
         )
       )
       setIsLoading(false)
     }
   }, [setup, messages])
+
+  // Auto-play: when round changes and autoPlay is on, auto-advance
+  useEffect(() => {
+    if (autoPlay && phase === 'trial' && !isLoading && !isFinished && round > 1) {
+      const timer = setTimeout(() => runRound(round), 800)
+      return () => clearTimeout(timer)
+    }
+  }, [round, autoPlay, phase, isLoading, isFinished])
 
   const handleNextRound = () => {
     if (!isLoading && round <= 7) {
@@ -114,6 +125,7 @@ export function TrialPage() {
     setMessages([])
     setRound(1)
     setIsFinished(false)
+    setAutoPlay(true)
     setSetup({ plaintiffSide: '', defendantSide: '', caseType: 'civil' })
   }
 
@@ -313,8 +325,21 @@ export function TrialPage() {
           </div>
         ))}
         {!isFinished && round <= 7 && (
-          <div className="ml-auto text-xs px-2 py-0.5 rounded" style={{ background: 'rgba(201,168,76,0.1)', color: 'var(--accent-gold)', border: '1px solid rgba(201,168,76,0.2)' }}>
-            다음: {ROUND_LABELS[round]?.label}
+          <div className="ml-auto flex items-center gap-2">
+            <button
+              onClick={() => setAutoPlay(!autoPlay)}
+              className="text-xs px-2 py-0.5 rounded transition-all"
+              style={{
+                background: autoPlay ? 'rgba(74,222,128,0.15)' : 'rgba(255,255,255,0.05)',
+                color: autoPlay ? '#4ade80' : 'var(--text-muted)',
+                border: `1px solid ${autoPlay ? 'rgba(74,222,128,0.3)' : 'var(--border)'}`,
+              }}
+            >
+              {autoPlay ? '▶ 자동' : '⏸ 수동'}
+            </button>
+            <div className="text-xs px-2 py-0.5 rounded" style={{ background: 'rgba(201,168,76,0.1)', color: 'var(--accent-gold)', border: '1px solid rgba(201,168,76,0.2)' }}>
+              다음: {ROUND_LABELS[round]?.label}
+            </div>
           </div>
         )}
       </div>

@@ -55,9 +55,10 @@ export function QuickConsultPage() {
         }
       })
     } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : '⚠️ 알 수 없는 오류가 발생했습니다.'
       setMessages(prev =>
         prev.map(m => m.id === streamingId
-          ? { ...m, content: '⚠️ 오류가 발생했습니다. API 키를 확인해주세요.', isStreaming: false }
+          ? { ...m, content: `⚠️ ${errorMessage}`, isStreaming: false }
           : m
         )
       )
@@ -98,9 +99,25 @@ export function QuickConsultPage() {
               <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
                 법률 질문을 입력하세요
               </p>
-              <p className="text-xs mt-2" style={{ color: 'var(--text-muted)' }}>
+              <p className="text-xs mt-2 mb-6" style={{ color: 'var(--text-muted)' }}>
                 계약, 부동산, 노동, 가족, 형사 등 모든 법률 분야
               </p>
+              <div className="flex flex-wrap gap-2 justify-center max-w-md">
+                {[
+                  '집주인이 보증금 3000만원을 2개월째 안 돌려줍니다',
+                  '퇴직금을 제대로 못 받았는데 어떻게 해야 하나요?',
+                  '온라인 쇼핑몰에서 환불 거부당했습니다',
+                ].map((q) => (
+                  <button
+                    key={q}
+                    onClick={() => { setInput(q); }}
+                    className="text-xs px-3 py-2 rounded-lg border transition-all hover:bg-white/5"
+                    style={{ borderColor: 'var(--border)', color: 'var(--text-secondary)' }}
+                  >
+                    💬 {q}
+                  </button>
+                ))}
+              </div>
             </motion.div>
           )}
         </AnimatePresence>

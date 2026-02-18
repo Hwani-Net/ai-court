@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { Download } from 'lucide-react'
+import { Download, Image } from 'lucide-react'
 
 export interface VerdictAnalysis {
   ruling: string             // "원고 승소" | "피고 승소" | "일부 승소"
@@ -14,6 +14,8 @@ export interface VerdictAnalysis {
 interface VerdictCardProps {
   analysis: VerdictAnalysis
   onDownloadPDF?: () => void
+  onDownloadImage?: () => void
+  isExporting?: boolean
 }
 
 function CircularGauge({ value, label, color }: { value: number; label: string; color: string }) {
@@ -86,7 +88,7 @@ function StrengthBar({ label, items, color }: { label: string; items: string[]; 
   )
 }
 
-export function VerdictCard({ analysis, onDownloadPDF }: VerdictCardProps) {
+export function VerdictCard({ analysis, onDownloadPDF, onDownloadImage, isExporting }: VerdictCardProps) {
   const favorColor = analysis.favorability === 'plaintiff'
     ? 'var(--prosecutor)'
     : analysis.favorability === 'defendant'
@@ -229,22 +231,44 @@ export function VerdictCard({ analysis, onDownloadPDF }: VerdictCardProps) {
           {analysis.recommendation}
         </div>
 
-        {/* Download button */}
-        {onDownloadPDF && (
-          <motion.button
-            onClick={onDownloadPDF}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className="w-full py-3 rounded-xl flex items-center justify-center gap-2 text-sm font-medium transition-all"
-            style={{
-              background: 'rgba(201,168,76,0.1)',
-              border: '1px solid rgba(201,168,76,0.3)',
-              color: 'var(--accent-gold)',
-            }}
-          >
-            <Download size={16} />
-            판결문 PDF 다운로드
-          </motion.button>
+        {/* Download buttons */}
+        {(onDownloadPDF || onDownloadImage) && (
+          <div className="flex gap-2">
+            {onDownloadPDF && (
+              <motion.button
+                onClick={onDownloadPDF}
+                disabled={isExporting}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="flex-1 py-2.5 rounded-xl flex items-center justify-center gap-2 text-sm font-medium transition-all disabled:opacity-50"
+                style={{
+                  background: 'rgba(201,168,76,0.1)',
+                  border: '1px solid rgba(201,168,76,0.3)',
+                  color: 'var(--accent-gold)',
+                }}
+              >
+                <Download size={15} />
+                {isExporting ? '저장 중...' : 'PDF'}
+              </motion.button>
+            )}
+            {onDownloadImage && (
+              <motion.button
+                onClick={onDownloadImage}
+                disabled={isExporting}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="flex-1 py-2.5 rounded-xl flex items-center justify-center gap-2 text-sm font-medium transition-all disabled:opacity-50"
+                style={{
+                  background: 'rgba(74,144,217,0.1)',
+                  border: '1px solid rgba(74,144,217,0.3)',
+                  color: 'var(--defense)',
+                }}
+              >
+                <Image size={15} />
+                {isExporting ? '저장 중...' : '이미지'}
+              </motion.button>
+            )}
+          </div>
         )}
       </div>
 

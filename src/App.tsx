@@ -1,14 +1,36 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Scale, ChevronLeft, Github, ExternalLink } from 'lucide-react'
+import { Scale, ChevronLeft, Github, ExternalLink, Moon, Sun } from 'lucide-react'
 import { ModeSelector } from '@/components/ModeSelector'
 import { QuickConsultPage } from '@/pages/QuickConsultPage'
 import { TrialPage } from '@/pages/TrialPage'
 import { DocumentPage } from '@/pages/DocumentPage'
+import { useTheme } from '@/hooks/useTheme'
 import type { CourtMode } from '@/types'
 import './index.css'
 
-function LandingHero({ onStart }: { onStart: (mode: CourtMode) => void }) {
+function ThemeToggleBtn({ theme, onToggle }: { theme: 'dark' | 'light'; onToggle: () => void }) {
+  return (
+    <button
+      onClick={onToggle}
+      className="p-2 rounded-lg transition-all hover:scale-110"
+      style={{
+        background: theme === 'dark' ? 'rgba(201,168,76,0.1)' : 'rgba(160,120,48,0.12)',
+        border: '1px solid var(--border)',
+        color: 'var(--accent-gold)',
+      }}
+      title={theme === 'dark' ? '라이트 모드로 전환' : '다크 모드로 전환'}
+    >
+      {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+    </button>
+  )
+}
+
+function LandingHero({ onStart, theme, onToggleTheme }: {
+  onStart: (mode: CourtMode) => void
+  theme: 'dark' | 'light'
+  onToggleTheme: () => void
+}) {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Top nav */}
@@ -29,6 +51,7 @@ function LandingHero({ onStart }: { onStart: (mode: CourtMode) => void }) {
           >
             <Github size={18} style={{ color: 'var(--text-muted)' }} />
           </a>
+          <ThemeToggleBtn theme={theme} onToggle={onToggleTheme} />
           <span className="text-xs px-3 py-1 rounded-full" style={{ background: 'rgba(201,168,76,0.15)', color: 'var(--accent-gold)', border: '1px solid rgba(201,168,76,0.3)' }}>
             Beta
           </span>
@@ -124,7 +147,12 @@ function LandingHero({ onStart }: { onStart: (mode: CourtMode) => void }) {
   )
 }
 
-function CourtLayout({ mode, onBack }: { mode: CourtMode; onBack: () => void }) {
+function CourtLayout({ mode, onBack, theme, onToggleTheme }: {
+  mode: CourtMode
+  onBack: () => void
+  theme: 'dark' | 'light'
+  onToggleTheme: () => void
+}) {
   const modeLabels: Record<CourtMode, string> = {
     quick: '⚡ 빠른 법률 상담',
     trial: '⚔️ 가상 재판',
@@ -153,7 +181,8 @@ function CourtLayout({ mode, onBack }: { mode: CourtMode; onBack: () => void }) 
         <span className="text-xs px-2 py-0.5 rounded" style={{ background: 'var(--bg-card)', color: 'var(--text-secondary)', border: '1px solid var(--border)' }}>
           {modeLabels[mode]}
         </span>
-        <div className="ml-auto">
+        <div className="ml-auto flex items-center gap-2">
+          <ThemeToggleBtn theme={theme} onToggle={onToggleTheme} />
           <a
             href="https://hack.primer.kr"
             target="_blank"
@@ -189,6 +218,7 @@ function CourtLayout({ mode, onBack }: { mode: CourtMode; onBack: () => void }) 
 
 export default function App() {
   const [activeMode, setActiveMode] = useState<CourtMode | null>(null)
+  const { theme, toggleTheme } = useTheme()
 
   return (
     <AnimatePresence mode="wait">
@@ -200,7 +230,7 @@ export default function App() {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <LandingHero onStart={setActiveMode} />
+          <LandingHero onStart={setActiveMode} theme={theme} onToggleTheme={toggleTheme} />
         </motion.div>
       ) : (
         <motion.div
@@ -211,7 +241,7 @@ export default function App() {
           transition={{ duration: 0.3 }}
           className="h-screen"
         >
-          <CourtLayout mode={activeMode} onBack={() => setActiveMode(null)} />
+          <CourtLayout mode={activeMode} onBack={() => setActiveMode(null)} theme={theme} onToggleTheme={toggleTheme} />
         </motion.div>
       )}
     </AnimatePresence>

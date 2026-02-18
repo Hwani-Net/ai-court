@@ -31,6 +31,44 @@
   --radius: 0.75rem;
 }
 
+/* Light theme overrides */
+[data-theme="light"] {
+  --bg-primary: #f5f0e8;
+  --bg-secondary: #ede8dc;
+  --bg-card: #faf7f0;
+  --bg-card-hover: #fff9ee;
+  --bg-glass: rgba(250, 247, 240, 0.9);
+
+  --text-primary: #2a1e0e;
+  --text-secondary: #6b5a3e;
+  --text-muted: #a08c6e;
+
+  --border: rgba(160, 120, 48, 0.2);
+  --border-strong: rgba(160, 120, 48, 0.45);
+
+  --prosecutor: #c0392b;
+  --prosecutor-bg: rgba(192, 57, 43, 0.08);
+  --defense: #2471a3;
+  --defense-bg: rgba(36, 113, 163, 0.08);
+  --judge: #a07830;
+  --judge-bg: rgba(160, 120, 48, 0.08);
+}
+
+[data-theme="light"] body {
+  background:
+    radial-gradient(ellipse at 20% 20%, rgba(201, 168, 76, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(74, 144, 217, 0.06) 0%, transparent 50%),
+    var(--bg-primary);
+}
+
+[data-theme="light"] .wood-panel {
+  background: linear-gradient(135deg, #c8a96e 0%, #d4b87a 50%, #c8a96e 100%);
+  border-bottom-color: #a07830;
+}
+
+[data-theme="light"] ::-webkit-scrollbar-track { background: var(--bg-primary); }
+[data-theme="light"] ::-webkit-scrollbar-thumb { background: #a07830; }
+
 * {
   box-sizing: border-box;
   margin: 0;

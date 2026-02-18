@@ -6,6 +6,7 @@ import { CourtRoom } from '@/components/CourtRoom'
 import { ShareButton } from '@/components/ShareButton'
 import { VerdictCard, type VerdictAnalysis } from '@/components/VerdictCard'
 import { runTrialRound, analyzeVerdict } from '@/services/openai'
+import { usePDFExport } from '@/hooks/usePDFExport'
 import type { Message, CaseType } from '@/types'
 
 interface TrialSetup {
@@ -26,6 +27,7 @@ const ROUND_LABELS: Record<number, { label: string; role: string; color: string 
 }
 
 export function TrialPage() {
+  const { verdictRef, downloadPDF, downloadImage, isExporting } = usePDFExport()
   const [phase, setPhase] = useState<'setup' | 'trial'>('setup')
   const [setup, setSetup] = useState<TrialSetup>({
     plaintiffSide: '',
@@ -379,7 +381,14 @@ export function TrialPage() {
                 <p className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>AI가 승소 확률과 핵심 쟁점을 정리합니다</p>
               </motion.div>
             ) : verdictAnalysis && (
-              <VerdictCard analysis={verdictAnalysis} />
+              <div ref={verdictRef}>
+                <VerdictCard
+                  analysis={verdictAnalysis}
+                  onDownloadPDF={downloadPDF}
+                  onDownloadImage={downloadImage}
+                  isExporting={isExporting}
+                />
+              </div>
             )}
           </div>
         )}

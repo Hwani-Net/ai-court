@@ -2,6 +2,7 @@ import { useState, useRef, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { Upload, FileText, X, Loader2 } from 'lucide-react'
 import { MessageBubble } from '@/components/MessageBubble'
+import { ShareButton } from '@/components/ShareButton'
 import { analyzeDocument } from '@/services/openai'
 import type { Message } from '@/types'
 
@@ -214,15 +215,23 @@ export function DocumentPage() {
 
         {/* Results */}
         {messages.length > 0 && (
-          <div>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
             <div className="gold-divider mb-4" />
-            <h3 className="text-sm font-bold mb-4" style={{ color: 'var(--accent-gold)' }}>
-              📋 분석 결과
-            </h3>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-bold" style={{ color: 'var(--accent-gold)' }}>
+                📋 분석 결과
+              </h3>
+              {!isAnalyzing && (
+                <ShareButton text="AI Court에서 법률 문서 분석을 받았어요! 소송장, 계약서 분석을 무료로 해보세요." />
+              )}
+            </div>
             {messages.map((msg, i) => (
               <MessageBubble key={msg.id} message={msg} index={i} />
             ))}
-          </div>
+          </motion.div>
         )}
       </div>
     </div>

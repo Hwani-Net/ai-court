@@ -12,7 +12,7 @@ function LandingHero({ onStart }: { onStart: (mode: CourtMode) => void }) {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Top nav */}
-      <nav className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: 'var(--border)' }}>
+      <nav className="flex items-center justify-between px-4 sm:px-6 py-4 border-b" style={{ borderColor: 'var(--border)' }}>
         <div className="flex items-center gap-2">
           <Scale size={22} style={{ color: 'var(--accent-gold)' }} />
           <span className="font-bold text-lg" style={{ fontFamily: 'Playfair Display, serif', color: 'var(--accent-gold)' }}>
@@ -21,10 +21,11 @@ function LandingHero({ onStart }: { onStart: (mode: CourtMode) => void }) {
         </div>
         <div className="flex items-center gap-3">
           <a
-            href="https://github.com"
+            href="https://github.com/Hwani-Net/ai-court"
             target="_blank"
             rel="noopener noreferrer"
             className="p-2 rounded-lg hover:bg-white/5 transition-colors"
+            title="GitHub"
           >
             <Github size={18} style={{ color: 'var(--text-muted)' }} />
           </a>
@@ -35,12 +36,12 @@ function LandingHero({ onStart }: { onStart: (mode: CourtMode) => void }) {
       </nav>
 
       {/* Hero */}
-      <div className="flex-1 flex flex-col items-center justify-center px-6 py-16 text-center">
+      <div className="flex-1 flex flex-col items-center justify-center px-4 sm:px-6 py-12 sm:py-16 text-center">
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6, type: 'spring' }}
-          className="text-7xl mb-6"
+          className="text-6xl sm:text-7xl mb-6"
         >
           ⚖️
         </motion.div>
@@ -49,7 +50,7 @@ function LandingHero({ onStart }: { onStart: (mode: CourtMode) => void }) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="text-4xl md:text-5xl font-bold mb-4"
+          className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4"
           style={{ fontFamily: 'Playfair Display, serif', color: 'var(--text-primary)' }}
         >
           AI가 당신의{' '}
@@ -60,7 +61,7 @@ function LandingHero({ onStart }: { onStart: (mode: CourtMode) => void }) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="text-lg max-w-xl mb-4"
+          className="text-base sm:text-lg max-w-xl mb-4"
           style={{ color: 'var(--text-secondary)' }}
         >
           AI 판사·검사·변호사가 실제 법정처럼 당신의 사건을 심리합니다.
@@ -71,13 +72,13 @@ function LandingHero({ onStart }: { onStart: (mode: CourtMode) => void }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
-          className="flex items-center gap-4 mb-12 text-sm"
+          className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 mb-10 sm:mb-12 text-xs sm:text-sm"
           style={{ color: 'var(--text-muted)' }}
         >
           <span>✅ 무료 법률 상담</span>
-          <span>•</span>
+          <span className="hidden sm:inline">•</span>
           <span>⚔️ 가상 재판 시뮬레이션</span>
-          <span>•</span>
+          <span className="hidden sm:inline">•</span>
           <span>📄 소송장 분석</span>
         </motion.div>
 
@@ -99,15 +100,16 @@ function LandingHero({ onStart }: { onStart: (mode: CourtMode) => void }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8 }}
-          className="flex gap-8 mt-16 text-center"
+          className="flex gap-6 sm:gap-8 mt-12 sm:mt-16 text-center"
         >
           {[
             { value: 'GPT-4o', label: 'AI 엔진' },
+            { value: '7라운드', label: '재판 진행' },
             { value: '3인', label: '법정 역할' },
             { value: '8개', label: '법률 분야' },
           ].map(stat => (
             <div key={stat.label}>
-              <div className="text-xl font-bold" style={{ color: 'var(--accent-gold)' }}>{stat.value}</div>
+              <div className="text-lg sm:text-xl font-bold" style={{ color: 'var(--accent-gold)' }}>{stat.value}</div>
               <div className="text-xs" style={{ color: 'var(--text-muted)' }}>{stat.label}</div>
             </div>
           ))}

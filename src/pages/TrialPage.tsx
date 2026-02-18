@@ -213,6 +213,37 @@ export function TrialPage() {
             재판 시작
           </button>
 
+          {/* Quick Examples */}
+          <div className="mt-8">
+            <p className="text-xs font-medium mb-3 text-center" style={{ color: 'var(--text-muted)' }}>
+              테스트용 추천 시나리오
+            </p>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => setSetup({
+                  caseType: 'civil',
+                  plaintiffSide: '집주인이 계약이 종료되었음에도 불구하고 다음 세입자가 들어오지 않았다는 이유로 보증금 5,000만원을 3개월째 돌려주지 않고 있습니다. 전세금 반환 및 이자 청구를 원합니다.',
+                  defendantSide: '역전세난으로 인해 당장 현금이 부족합니다. 새로운 세입자를 구하기 위해 최선을 다하고 있으며, 보증금이 마련되는 대로 지연 이자와 함께 지급할 예정입니다.'
+                })}
+                className="p-3 rounded-lg text-left text-[11px] leading-tight transition-all hover:bg-white/5 border"
+                style={{ borderColor: 'var(--border)', background: 'var(--bg-card)', color: 'var(--text-secondary)' }}
+              >
+                🏠 임대차 보증금 반환 분쟁
+              </button>
+              <button
+                onClick={() => setSetup({
+                  caseType: 'criminal',
+                  plaintiffSide: '당근마켓에서 아이폰 15를 100만원에 구매하기로 하고 입금했는데, 판매자가 벽돌이 든 택배를 보낸 후 연락을 두절했습니다. 사기죄로 강력한 처벌을 원합니다.',
+                  defendantSide: '포장 과정에서 실수가 있었던 것이지 사기의 고의는 없었습니다. 상품은 현재 다시 배송 중이며, 단순 배송 지연일 뿐입니다.'
+                })}
+                className="p-3 rounded-lg text-left text-[11px] leading-tight transition-all hover:bg-white/5 border"
+                style={{ borderColor: 'var(--border)', background: 'var(--bg-card)', color: 'var(--text-secondary)' }}
+              >
+                📱 중고거래 택배 사기 사건
+              </button>
+            </div>
+          </div>
+
           {/* Info */}
           <div className="mt-6 grid grid-cols-4 gap-3 text-center">
             {Object.entries(ROUND_LABELS).map(([r, info]) => (

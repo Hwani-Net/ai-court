@@ -47,14 +47,18 @@ export async function quickConsult(
   onChunk: StreamCallback
 ): Promise<void> {
   const systemPrompt = `당신은 대한민국 법률 전문가입니다. 
-사용자의 법률 질문에 대해 핵심만 간결하게 답변합니다.
-카테고리: ${category}
-답변 형식:
-1. 핵심 법률 요점 (2-3줄)
-2. 관련 법조항 (있다면)
-3. 권고 행동 (1-2줄)
-⚠️ 이 답변은 법률 정보 제공 목적이며 실제 법률 자문이 아닙니다.
-반드시 한국어로 답변하세요.`
+  사용자의 법률 질문에 대해 핵심만 간결하게 답변합니다.
+  카테고리: ${category}
+  
+  반드시 아래 형식을 엄격히 지켜 답변하세요:
+  [주문] 법률 질문에 대한 결론적 답변 (1-2줄)
+  [이유] 1. 관련 법조항 및 법리 해석
+  2. 현재 상황에서의 법적 타당성 분석
+  [권고사항] 1. 즉시 취해야 할 행동 지침
+  2. 추가 증거 확보나 변호사 상담 필요성
+  
+  ⚠️ 이 답변은 법률 정보 제공 목적이며 실제 법률 자문이 아닙니다.
+  반드시 한국어로 답변하세요.`
 
   await streamOpenAI([
     { role: 'system', content: systemPrompt },
@@ -124,26 +128,26 @@ ${context}`
 
 // Document analysis
 export async function analyzeDocument(
-  documentText: string,
+  text: string,
   userSide: 'plaintiff' | 'defendant',
   onChunk: StreamCallback
 ): Promise<void> {
-  const sideLabel = userSide === 'plaintiff' ? '원고(고소인)' : '피고(피고소인)'
+  const systemPrompt = `당신은 대한민국 법률 문서 분석 전문가입니다. 
+  사용자가 업로드한 문서(소송장, 계약서 등)를 분석하여 ${userSide === 'plaintiff' ? '원고(고소인)' : '피고(피고소인)'} 입장에서의 유불리와 대응 전략을 제시합니다.
   
-  const systemPrompt = `당신은 대한민국의 법률 전문가 팀입니다. 
-제출된 법률 문서를 분석하여 ${sideLabel} 입장에서 재판 시나리오를 시뮬레이션합니다.
-분석 형식:
-📋 문서 요약
-⚔️ 핵심 쟁점
-🔴 불리한 점
-🔵 유리한 점  
-⚖️ 예상 판결 방향
-💡 권고 전략
-반드시 한국어로 답변하세요.`
+  반드시 아래 형식을 엄격히 지켜 답변하세요:
+  [주문] 문서의 핵심 결론 및 승소 가능성/위험도 요약 (2-3줄)
+  [이유] 1. 법적 근거 및 주요 쟁점 분석
+  2. ${userSide === 'plaintiff' ? '원고' : '피고'}에게 유리한 점
+  3. ${userSide === 'plaintiff' ? '원고' : '피고'}에게 불리한 점
+  [권고사항] 1. 향후 구체적인 대응 전략
+  2. 증거 확보 방안 등 실질적 조언
+  
+  ⚠️ 한국어로 전문적이고 신뢰감 있게 답변하세요.`
 
   await streamOpenAI([
     { role: 'system', content: systemPrompt },
-    { role: 'user', content: `다음 법률 문서를 분석해주세요:\n\n${documentText}` }
+    { role: 'user', content: `문서 내용:\n${text}` }
   ], (content, done) => {
     onChunk({ role: 'judge', content, done })
   })

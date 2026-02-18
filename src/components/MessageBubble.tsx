@@ -155,37 +155,50 @@ export function MessageBubble({ message, index }: MessageBubbleProps) {
       {/* Avatar */}
       <div
         className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 mt-1"
-        style={{ background: config.avatarBg, color: config.labelColor }}
+        style={{
+          background: config.avatarBg,
+          color: config.labelColor,
+          border: `1.5px solid ${config.border}`,
+          boxShadow: message.role !== 'user' && message.role !== 'system'
+            ? `0 0 10px ${config.border}40`
+            : 'none',
+        }}
       >
         {config.avatar}
       </div>
 
       {/* Bubble */}
       <div className={`max-w-[80%] ${isUser ? 'items-end' : 'items-start'} flex flex-col gap-1`}>
-        <span className="text-xs px-1" style={{ color: config.labelColor }}>
+        <span className="text-xs px-1 font-medium" style={{ color: config.labelColor }}>
           {config.label}
         </span>
         <div
-          className="px-4 py-3 rounded-2xl relative"
+          className="px-4 py-3 relative overflow-hidden"
           style={{
             background: config.bg,
             border: `1px solid ${config.border}`,
             borderRadius: isUser ? '18px 4px 18px 18px' : '4px 18px 18px 18px',
           }}
         >
+          {/* Judge special top accent */}
+          {message.role === 'judge' && (
+            <div
+              className="absolute top-0 left-0 right-0 h-[2px]"
+              style={{ background: 'linear-gradient(90deg, transparent, var(--accent-gold), transparent)' }}
+            />
+          )}
           {renderContent(message.content, message.role)}
           
           {/* Streaming indicator */}
           {message.isStreaming && (
-            <span className="inline-flex items-center gap-0.5 ml-1 align-middle">
+            <span className="inline-flex items-center gap-0.5 ml-1.5 align-middle">
               {[0, 1, 2].map(i => (
-                <span
+                <motion.span
                   key={i}
-                  className="inline-block w-1 h-1 rounded-full"
-                  style={{
-                    background: config.labelColor,
-                    animation: `pulse 1.2s ease-in-out ${i * 0.2}s infinite`,
-                  }}
+                  className="inline-block w-1.5 h-1.5 rounded-full"
+                  style={{ background: config.labelColor }}
+                  animate={{ scale: [1, 1.6, 1], opacity: [0.4, 1, 0.4] }}
+                  transition={{ duration: 0.8, repeat: Infinity, delay: i * 0.2 }}
                 />
               ))}
             </span>

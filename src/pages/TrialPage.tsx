@@ -150,142 +150,212 @@ export function TrialPage() {
 
   // ── Setup Phase ──────────────────────────────────────────────────────────
   if (phase === 'setup') {
+    const SCENARIOS = [
+      {
+        emoji: '🏠',
+        title: '임대차 보증금 반환',
+        tag: '민사',
+        tagColor: 'var(--accent-gold)',
+        tagBg: 'rgba(201,168,76,0.12)',
+        borderHover: 'rgba(201,168,76,0.4)',
+        setup: {
+          caseType: 'civil' as CaseType,
+          plaintiffSide: '집주인이 계약이 종료되었음에도 불구하고 다음 세입자가 들어오지 않았다는 이유로 보증금 5,000만원을 3개월째 돌려주지 않고 있습니다. 전세금 반환 및 이자 청구를 원합니다.',
+          defendantSide: '역전세난으로 인해 당장 현금이 부족합니다. 새로운 세입자를 구하기 위해 최선을 다하고 있으며, 보증금이 마련되는 대로 지연 이자와 함께 지급할 예정입니다.',
+        },
+      },
+      {
+        emoji: '📱',
+        title: '중고거래 택배 사기',
+        tag: '형사',
+        tagColor: 'var(--prosecutor)',
+        tagBg: 'rgba(224,82,82,0.12)',
+        borderHover: 'rgba(224,82,82,0.4)',
+        setup: {
+          caseType: 'criminal' as CaseType,
+          plaintiffSide: '당근마켓에서 아이폰 15를 100만원에 구매하기로 하고 입금했는데, 판매자가 벽돌이 든 택배를 보낸 후 연락을 두절했습니다. 사기죄로 강력한 처벌을 원합니다.',
+          defendantSide: '포장 과정에서 실수가 있었던 것이지 사기의 고의는 없었습니다. 상품은 현재 다시 배송 중이며, 단순 배송 지연일 뿐입니다.',
+        },
+      },
+    ]
+
     return (
-      <div className="flex flex-col h-full p-6 overflow-y-auto">
+      <div className="flex flex-col h-full overflow-y-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="max-w-2xl mx-auto w-full"
+          className="max-w-2xl mx-auto w-full p-5"
         >
-          <div className="text-center mb-8">
-            <div className="text-5xl mb-3">⚔️</div>
-            <h2 className="text-2xl font-bold mb-2" style={{ color: 'var(--accent-gold)', fontFamily: 'Playfair Display, serif' }}>
+          {/* Header */}
+          <div className="text-center mb-7">
+            <motion.div
+              initial={{ scale: 0.7, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ type: 'spring', bounce: 0.4 }}
+              className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4"
+              style={{
+                background: 'linear-gradient(135deg, rgba(201,168,76,0.2) 0%, rgba(201,168,76,0.05) 100%)',
+                border: '1.5px solid rgba(201,168,76,0.4)',
+                boxShadow: '0 0 30px rgba(201,168,76,0.12)',
+              }}
+            >
+              <span className="text-3xl">⚔️</span>
+            </motion.div>
+            <h2 className="text-xl font-bold mb-1.5" style={{ color: 'var(--accent-gold)', fontFamily: 'Playfair Display, serif' }}>
               가상 재판 시뮬레이션
             </h2>
-            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+            <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
               AI 판사·검사·변호사 3인이 실제 법정처럼 7라운드 재판을 진행합니다
             </p>
           </div>
 
           {/* Case type */}
-          <div className="mb-6">
-            <label className="text-sm font-medium mb-2 block" style={{ color: 'var(--text-secondary)' }}>
+          <div className="mb-5">
+            <label className="text-xs font-semibold mb-2 block tracking-wider uppercase" style={{ color: 'var(--text-muted)' }}>
               사건 유형
             </label>
             <div className="flex gap-3">
               {(['civil', 'criminal'] as CaseType[]).map(type => (
-                <button
+                <motion.button
                   key={type}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                   onClick={() => setSetup(s => ({ ...s, caseType: type }))}
                   className="flex-1 py-3 rounded-xl border text-sm font-medium transition-all"
                   style={{
                     borderColor: setup.caseType === type ? 'var(--accent-gold)' : 'var(--border)',
-                    background: setup.caseType === type ? 'rgba(201,168,76,0.1)' : 'var(--bg-card)',
+                    background: setup.caseType === type ? 'rgba(201,168,76,0.12)' : 'var(--bg-card)',
                     color: setup.caseType === type ? 'var(--accent-gold)' : 'var(--text-secondary)',
+                    boxShadow: setup.caseType === type ? '0 0 16px rgba(201,168,76,0.15)' : 'none',
                   }}
                 >
                   {type === 'civil' ? '⚖️ 민사 사건' : '🔴 형사 사건'}
-                </button>
+                </motion.button>
               ))}
             </div>
           </div>
 
           {/* Plaintiff */}
           <div className="mb-4">
-            <label className="text-sm font-medium mb-2 flex items-center gap-1" style={{ color: '#ef4444' }}>
-              <span className="w-2 h-2 rounded-full bg-red-500 inline-block" />
+            <label className="text-xs font-semibold mb-2 flex items-center gap-1.5 tracking-wider uppercase" style={{ color: 'var(--prosecutor)' }}>
+              <span className="w-2 h-2 rounded-full inline-block" style={{ background: 'var(--prosecutor)' }} />
               원고(고소인) 측 주장
             </label>
             <textarea
               value={setup.plaintiffSide}
               onChange={e => setSetup(s => ({ ...s, plaintiffSide: e.target.value }))}
               placeholder="예: 피고는 2024년 3월 계약한 인테리어 공사를 완료하지 않고 계약금 500만원을 돌려주지 않고 있습니다."
-              rows={4}
+              rows={3}
               className="w-full px-4 py-3 rounded-xl text-sm resize-none outline-none transition-all"
               style={{
                 background: 'var(--bg-card)',
-                border: '1px solid rgba(239,68,68,0.3)',
+                border: '1px solid rgba(224,82,82,0.25)',
                 color: 'var(--text-primary)',
               }}
-              onFocus={e => e.target.style.borderColor = '#ef4444'}
-              onBlur={e => e.target.style.borderColor = 'rgba(239,68,68,0.3)'}
+              onFocus={e => e.target.style.borderColor = 'var(--prosecutor)'}
+              onBlur={e => e.target.style.borderColor = 'rgba(224,82,82,0.25)'}
             />
           </div>
 
+          {/* VS divider */}
+          <div className="flex items-center gap-3 my-3">
+            <div className="flex-1 h-px" style={{ background: 'var(--border)' }} />
+            <span className="text-xs font-bold px-2 py-0.5 rounded" style={{ color: 'var(--text-muted)', background: 'var(--bg-card)', border: '1px solid var(--border)' }}>VS</span>
+            <div className="flex-1 h-px" style={{ background: 'var(--border)' }} />
+          </div>
+
           {/* Defendant */}
-          <div className="mb-8">
-            <label className="text-sm font-medium mb-2 flex items-center gap-1" style={{ color: '#3b82f6' }}>
-              <span className="w-2 h-2 rounded-full bg-blue-500 inline-block" />
+          <div className="mb-6">
+            <label className="text-xs font-semibold mb-2 flex items-center gap-1.5 tracking-wider uppercase" style={{ color: 'var(--defense)' }}>
+              <span className="w-2 h-2 rounded-full inline-block" style={{ background: 'var(--defense)' }} />
               피고(피고소인) 측 주장
             </label>
             <textarea
               value={setup.defendantSide}
               onChange={e => setSetup(s => ({ ...s, defendantSide: e.target.value }))}
               placeholder="예: 원고가 추가 공사를 요청하여 비용이 초과되었고, 원고가 먼저 계약을 위반하였습니다."
-              rows={4}
+              rows={3}
               className="w-full px-4 py-3 rounded-xl text-sm resize-none outline-none transition-all"
               style={{
                 background: 'var(--bg-card)',
-                border: '1px solid rgba(59,130,246,0.3)',
+                border: '1px solid rgba(74,144,217,0.25)',
                 color: 'var(--text-primary)',
               }}
-              onFocus={e => e.target.style.borderColor = '#3b82f6'}
-              onBlur={e => e.target.style.borderColor = 'rgba(59,130,246,0.3)'}
+              onFocus={e => e.target.style.borderColor = 'var(--defense)'}
+              onBlur={e => e.target.style.borderColor = 'rgba(74,144,217,0.25)'}
             />
           </div>
 
-          <button
+          {/* Start button */}
+          <motion.button
+            whileHover={{ scale: 1.02, boxShadow: '0 8px 24px rgba(201,168,76,0.3)' }}
+            whileTap={{ scale: 0.98 }}
             onClick={startTrial}
             disabled={!setup.plaintiffSide.trim() || !setup.defendantSide.trim()}
-            className="w-full py-4 rounded-xl font-bold text-base flex items-center justify-center gap-2 transition-all disabled:opacity-40 hover:opacity-90"
+            className="w-full py-4 rounded-xl font-bold text-base flex items-center justify-center gap-2 transition-all disabled:opacity-40"
             style={{ background: 'var(--accent-gold)', color: '#1a1208' }}
           >
             <Play size={20} />
             재판 시작
-          </button>
+          </motion.button>
 
-          {/* Quick Examples */}
-          <div className="mt-8">
-            <p className="text-xs font-medium mb-3 text-center" style={{ color: 'var(--text-muted)' }}>
-              테스트용 추천 시나리오
+          {/* Scenarios */}
+          <div className="mt-6">
+            <p className="text-xs font-semibold mb-3 tracking-wider uppercase" style={{ color: 'var(--text-muted)' }}>
+              추천 시나리오
             </p>
             <div className="grid grid-cols-2 gap-2">
-              <button
-                onClick={() => setSetup({
-                  caseType: 'civil',
-                  plaintiffSide: '집주인이 계약이 종료되었음에도 불구하고 다음 세입자가 들어오지 않았다는 이유로 보증금 5,000만원을 3개월째 돌려주지 않고 있습니다. 전세금 반환 및 이자 청구를 원합니다.',
-                  defendantSide: '역전세난으로 인해 당장 현금이 부족합니다. 새로운 세입자를 구하기 위해 최선을 다하고 있으며, 보증금이 마련되는 대로 지연 이자와 함께 지급할 예정입니다.'
-                })}
-                className="p-3 rounded-lg text-left text-[11px] leading-tight transition-all hover:bg-white/5 border"
-                style={{ borderColor: 'var(--border)', background: 'var(--bg-card)', color: 'var(--text-secondary)' }}
-              >
-                🏠 임대차 보증금 반환 분쟁
-              </button>
-              <button
-                onClick={() => setSetup({
-                  caseType: 'criminal',
-                  plaintiffSide: '당근마켓에서 아이폰 15를 100만원에 구매하기로 하고 입금했는데, 판매자가 벽돌이 든 택배를 보낸 후 연락을 두절했습니다. 사기죄로 강력한 처벌을 원합니다.',
-                  defendantSide: '포장 과정에서 실수가 있었던 것이지 사기의 고의는 없었습니다. 상품은 현재 다시 배송 중이며, 단순 배송 지연일 뿐입니다.'
-                })}
-                className="p-3 rounded-lg text-left text-[11px] leading-tight transition-all hover:bg-white/5 border"
-                style={{ borderColor: 'var(--border)', background: 'var(--bg-card)', color: 'var(--text-secondary)' }}
-              >
-                📱 중고거래 택배 사기 사건
-              </button>
+              {SCENARIOS.map(sc => (
+                <motion.button
+                  key={sc.title}
+                  whileHover={{ scale: 1.02, borderColor: sc.borderHover, boxShadow: `0 4px 16px ${sc.tagBg}` }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() => setSetup(sc.setup)}
+                  className="p-3 rounded-xl text-left transition-all border"
+                  style={{ borderColor: 'var(--border)', background: 'var(--bg-card)' }}
+                >
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="text-base">{sc.emoji}</span>
+                    <span
+                      className="text-[9px] px-1.5 py-0.5 rounded-full font-semibold"
+                      style={{ background: sc.tagBg, color: sc.tagColor }}
+                    >
+                      {sc.tag}
+                    </span>
+                  </div>
+                  <div className="text-[11px] font-medium" style={{ color: 'var(--text-primary)' }}>{sc.title}</div>
+                </motion.button>
+              ))}
             </div>
           </div>
 
-          {/* Info */}
-          <div className="mt-6 grid grid-cols-4 gap-3 text-center">
-            {Object.entries(ROUND_LABELS).map(([r, info]) => (
-              <div key={r} className="p-2 rounded-lg text-xs" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                <div className="font-bold mb-0.5" style={{ color: info.color }}>R{r}</div>
-                <div style={{ color: 'var(--text-muted)' }}>{info.label}</div>
-              </div>
-            ))}
-            <div className="p-2 rounded-lg text-xs" style={{ background: 'rgba(201,168,76,0.1)', border: '1px solid rgba(201,168,76,0.3)' }}>
-              <div className="font-bold mb-0.5" style={{ color: 'var(--accent-gold)' }}>⚖️</div>
-              <div style={{ color: 'var(--text-muted)' }}>판결</div>
+          {/* Round timeline info */}
+          <div className="mt-6">
+            <p className="text-xs font-semibold mb-3 tracking-wider uppercase" style={{ color: 'var(--text-muted)' }}>
+              재판 진행 순서
+            </p>
+            <div className="flex items-center gap-0">
+              {Object.entries(ROUND_LABELS).map(([r, info]) => {
+                const roleColor = info.color
+                return (
+                  <div key={r} className="flex items-center flex-1">
+                    <div className="flex flex-col items-center gap-1">
+                      <div
+                        className="w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold"
+                        style={{ background: `${roleColor}20`, border: `1.5px solid ${roleColor}60`, color: roleColor }}
+                      >
+                        {r}
+                      </div>
+                      <div className="text-[8px] text-center whitespace-nowrap" style={{ color: 'var(--text-muted)', maxWidth: '36px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {info.label}
+                      </div>
+                    </div>
+                    {Number(r) < 7 && (
+                      <div className="flex-1 h-px mx-0.5" style={{ background: 'var(--border)' }} />
+                    )}
+                  </div>
+                )
+              })}
             </div>
           </div>
         </motion.div>
@@ -295,20 +365,19 @@ export function TrialPage() {
 
   // ── Trial Phase ──────────────────────────────────────────────────────────
   const completedRounds = Math.min(round - 1, 7)
-  const progressPct = (completedRounds / 7) * 100
 
   return (
     <div className="flex flex-col h-full">
       {/* Court header */}
       <div className="wood-panel px-4 py-2.5 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <span className="text-xl">⚖️</span>
+          <span className="text-lg">⚖️</span>
           <div>
-            <div className="text-xs font-medium" style={{ color: 'var(--accent-gold)' }}>
-              {setup.caseType === 'civil' ? '민사' : '형사'} 재판 진행 중
+            <div className="text-xs font-bold" style={{ color: 'var(--accent-gold)' }}>
+              {setup.caseType === 'civil' ? '민사' : '형사'} 재판
             </div>
-            <div className="text-xs" style={{ color: 'var(--text-muted)' }}>
-              라운드 {completedRounds} / 7
+            <div className="text-[10px]" style={{ color: 'var(--text-muted)' }}>
+              {completedRounds} / 7 라운드 완료
             </div>
           </div>
         </div>
@@ -320,43 +389,50 @@ export function TrialPage() {
         </div>
       </div>
 
-      {/* Progress bar */}
-      <div className="h-0.5 w-full" style={{ background: 'var(--border)' }}>
-        <motion.div
-          className="h-full"
-          style={{ background: 'var(--accent-gold)' }}
-          initial={{ width: 0 }}
-          animate={{ width: `${progressPct}%` }}
-          transition={{ duration: 0.5 }}
-        />
-      </div>
-
-      {/* Courtroom visual */}
+      {/* Courtroom visual (includes round timeline) */}
       <CourtRoom activeRole={activeRole} currentRound={round > 7 ? 7 : round} isLoading={isLoading} />
 
-      {/* Auto-play & round info */}
-      <div className="flex items-center justify-between px-4 py-1.5 border-b" style={{ borderColor: 'var(--border)', background: 'var(--bg-secondary)' }}>
+      {/* Auto-play & current speaker banner */}
+      <div className="flex items-center justify-between px-3 py-1.5 border-b" style={{ borderColor: 'var(--border)', background: 'var(--bg-secondary)' }}>
         {!isFinished && round <= 7 ? (
           <>
-            <div className="text-xs px-2 py-0.5 rounded" style={{ background: 'rgba(201,168,76,0.1)', color: 'var(--accent-gold)', border: '1px solid rgba(201,168,76,0.2)' }}>
-              다음: {ROUND_LABELS[round]?.label}
-            </div>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={round}
+                initial={{ opacity: 0, x: -8 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 8 }}
+                className="text-xs px-2.5 py-1 rounded-lg font-medium"
+                style={{
+                  background: 'rgba(201,168,76,0.1)',
+                  color: 'var(--accent-gold)',
+                  border: '1px solid rgba(201,168,76,0.2)',
+                }}
+              >
+                R{round} · {ROUND_LABELS[round]?.label}
+              </motion.div>
+            </AnimatePresence>
             <button
               onClick={() => setAutoPlay(!autoPlay)}
-              className="text-xs px-2 py-0.5 rounded transition-all"
+              className="text-xs px-2.5 py-1 rounded-lg transition-all font-medium"
               style={{
-                background: autoPlay ? 'rgba(74,222,128,0.15)' : 'rgba(255,255,255,0.05)',
+                background: autoPlay ? 'rgba(74,222,128,0.12)' : 'rgba(255,255,255,0.04)',
                 color: autoPlay ? '#4ade80' : 'var(--text-muted)',
-                border: `1px solid ${autoPlay ? 'rgba(74,222,128,0.3)' : 'var(--border)'}`,
+                border: `1px solid ${autoPlay ? 'rgba(74,222,128,0.25)' : 'var(--border)'}`,
               }}
             >
-              {autoPlay ? '▶ 자동' : '⏸ 수동'}
+              {autoPlay ? '▶ 자동 진행' : '⏸ 수동 진행'}
             </button>
           </>
         ) : (
-          <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
-            {isFinished ? '재판 종결' : '재판 진행 중'}
-          </span>
+          <motion.span
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-xs font-medium"
+            style={{ color: isFinished ? 'var(--accent-gold)' : 'var(--text-muted)' }}
+          >
+            {isFinished ? '⚖️ 재판 종결' : '재판 진행 중'}
+          </motion.span>
         )}
       </div>
 
@@ -396,36 +472,40 @@ export function TrialPage() {
       </div>
 
       {/* Controls */}
-      <div className="p-4 border-t" style={{ borderColor: 'var(--border)' }}>
+      <div className="p-3 border-t" style={{ borderColor: 'var(--border)' }}>
         {isFinished ? (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center space-y-3"
+            className="space-y-2"
           >
             {/* Verdict banner */}
-            <div
-              className="py-3 px-4 rounded-xl"
-              style={{ background: 'rgba(201,168,76,0.1)', border: '1px solid rgba(201,168,76,0.3)' }}
+            <motion.div
+              animate={{ boxShadow: ['0 0 0px rgba(201,168,76,0)', '0 0 20px rgba(201,168,76,0.25)', '0 0 0px rgba(201,168,76,0)'] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="py-3 px-4 rounded-xl flex items-center gap-3"
+              style={{ background: 'rgba(201,168,76,0.1)', border: '1px solid rgba(201,168,76,0.35)' }}
             >
-              <div className="text-2xl mb-1">⚖️</div>
-              <p className="text-sm font-bold" style={{ color: 'var(--accent-gold)' }}>
-                재판이 종결되었습니다
-              </p>
-              <p className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>
-                위의 판결문을 확인하세요
-              </p>
-            </div>
-            <button
+              <span className="text-2xl">⚖️</span>
+              <div>
+                <p className="text-sm font-bold" style={{ color: 'var(--accent-gold)' }}>재판이 종결되었습니다</p>
+                <p className="text-xs" style={{ color: 'var(--text-muted)' }}>위의 판결문을 확인하세요</p>
+              </div>
+            </motion.div>
+            <motion.button
+              whileHover={{ scale: 1.01 }}
+              whileTap={{ scale: 0.99 }}
               onClick={resetTrial}
-              className="w-full py-3 rounded-xl text-sm font-medium transition-all hover:opacity-80"
+              className="w-full py-2.5 rounded-xl text-sm font-medium transition-all"
               style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
             >
               🔄 새 재판 시작
-            </button>
+            </motion.button>
           </motion.div>
         ) : (
-          <button
+          <motion.button
+            whileHover={!isLoading ? { scale: 1.01, boxShadow: '0 4px 16px rgba(201,168,76,0.2)' } : {}}
+            whileTap={!isLoading ? { scale: 0.99 } : {}}
             onClick={handleNextRound}
             disabled={isLoading || round > 7}
             className="w-full py-3 rounded-xl font-medium flex items-center justify-center gap-2 transition-all disabled:opacity-40"
@@ -436,7 +516,7 @@ export function TrialPage() {
             ) : (
               <><ChevronRight size={18} /> 다음 발언 ({ROUND_LABELS[round]?.label})</>
             )}
-          </button>
+          </motion.button>
         )}
       </div>
     </div>

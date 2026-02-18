@@ -1,6 +1,6 @@
-import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Scale, ChevronLeft, Github, ExternalLink, Moon, Sun } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
+import { motion, AnimatePresence, useInView } from 'framer-motion'
+import { Scale, ChevronLeft, Github, Moon, Sun, ExternalLink } from 'lucide-react'
 import { ModeSelector } from '@/components/ModeSelector'
 import { QuickConsultPage } from '@/pages/QuickConsultPage'
 import { TrialPage } from '@/pages/TrialPage'
@@ -26,17 +26,106 @@ function ThemeToggleBtn({ theme, onToggle }: { theme: 'dark' | 'light'; onToggle
   )
 }
 
+// Animated count-up hook
+function useCountUp(target: number, duration = 1200) {
+  const [count, setCount] = useState(0)
+  const ref = useRef<HTMLDivElement>(null)
+  const inView = useInView(ref, { once: true })
+
+  useEffect(() => {
+    if (!inView) return
+    let start = 0
+    const step = target / (duration / 16)
+    const timer = setInterval(() => {
+      start += step
+      if (start >= target) { setCount(target); clearInterval(timer) }
+      else setCount(Math.floor(start))
+    }, 16)
+    return () => clearInterval(timer)
+  }, [inView, target, duration])
+
+  return { count, ref }
+}
+
+function StatItem({ value, numericValue, label, index }: {
+  value: string
+  numericValue?: number
+  label: string
+  index: number
+}) {
+  const { count, ref } = useCountUp(numericValue ?? 0)
+  const suffix = numericValue !== undefined ? value.replace(/[0-9]/g, '') : ''
+  const displayValue = numericValue !== undefined ? `${count}${suffix}` : value
+  return (
+    <div ref={ref} className="text-center" style={{ minWidth: '72px' }}>
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.9 + index * 0.1 }}
+        className="text-lg sm:text-xl font-bold mb-0.5"
+        style={{ color: 'var(--accent-gold)' }}
+      >
+        {displayValue}
+      </motion.div>
+      <div className="text-[10px] tracking-wider uppercase" style={{ color: 'var(--text-muted)' }}>
+        {label}
+      </div>
+    </div>
+  )
+}
+
 function LandingHero({ onStart, theme, onToggleTheme }: {
   onStart: (mode: CourtMode) => void
   theme: 'dark' | 'light'
   onToggleTheme: () => void
 }) {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col relative overflow-hidden">
+      {/* Background ambient orbs */}
+      <div className="absolute inset-0 pointer-events-none" aria-hidden>
+        <div
+          className="absolute w-[500px] h-[500px] rounded-full"
+          style={{
+            top: '-15%', left: '-10%',
+            background: 'radial-gradient(circle, rgba(201,168,76,0.07) 0%, transparent 70%)',
+            animation: 'float-orb 8s ease-in-out infinite',
+          }}
+        />
+        <div
+          className="absolute w-[400px] h-[400px] rounded-full"
+          style={{
+            bottom: '10%', right: '-8%',
+            background: 'radial-gradient(circle, rgba(74,144,217,0.06) 0%, transparent 70%)',
+            animation: 'float-orb 10s ease-in-out 2s infinite reverse',
+          }}
+        />
+        <div
+          className="absolute w-[300px] h-[300px] rounded-full"
+          style={{
+            top: '40%', left: '60%',
+            background: 'radial-gradient(circle, rgba(224,82,82,0.04) 0%, transparent 70%)',
+            animation: 'float-orb 12s ease-in-out 4s infinite',
+          }}
+        />
+        {/* Subtle grid pattern */}
+        <div
+          className="absolute inset-0 opacity-[0.025]"
+          style={{
+            backgroundImage: 'linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px)',
+            backgroundSize: '60px 60px',
+          }}
+        />
+      </div>
+
       {/* Top nav */}
-      <nav className="flex items-center justify-between px-4 sm:px-6 py-4 border-b" style={{ borderColor: 'var(--border)' }}>
+      <nav className="relative flex items-center justify-between px-4 sm:px-8 py-4 border-b" style={{ borderColor: 'var(--border)' }}>
         <div className="flex items-center gap-2">
-          <Scale size={22} style={{ color: 'var(--accent-gold)' }} />
+          <motion.div
+            animate={{ rotate: [0, -8, 8, 0] }}
+            transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            <Scale size={22} style={{ color: 'var(--accent-gold)' }} />
+          </motion.div>
           <span className="font-bold text-lg" style={{ fontFamily: 'Playfair Display, serif', color: 'var(--accent-gold)' }}>
             AI Court
           </span>
@@ -52,95 +141,150 @@ function LandingHero({ onStart, theme, onToggleTheme }: {
             <Github size={18} style={{ color: 'var(--text-muted)' }} />
           </a>
           <ThemeToggleBtn theme={theme} onToggle={onToggleTheme} />
-          <span className="text-xs px-3 py-1 rounded-full" style={{ background: 'rgba(201,168,76,0.15)', color: 'var(--accent-gold)', border: '1px solid rgba(201,168,76,0.3)' }}>
+          <motion.span
+            animate={{ opacity: [1, 0.6, 1] }}
+            transition={{ duration: 2, repeat: Infinity }}
+            className="text-xs px-3 py-1 rounded-full"
+            style={{ background: 'rgba(201,168,76,0.15)', color: 'var(--accent-gold)', border: '1px solid rgba(201,168,76,0.3)' }}
+          >
             Beta
-          </span>
+          </motion.span>
         </div>
       </nav>
 
       {/* Hero */}
-      <div className="flex-1 flex flex-col items-center justify-center px-4 sm:px-6 py-12 sm:py-16 text-center">
+      <div className="relative flex-1 flex flex-col items-center justify-center px-4 sm:px-8 py-10 sm:py-14 text-center">
+        {/* Gavel icon with animation */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6, type: 'spring' }}
-          className="text-6xl sm:text-7xl mb-6"
+          initial={{ opacity: 0, scale: 0.5, rotate: -20 }}
+          animate={{ opacity: 1, scale: 1, rotate: 0 }}
+          transition={{ duration: 0.7, type: 'spring', bounce: 0.4 }}
+          className="mb-6 relative"
         >
-          ⚖️
+          <div
+            className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl flex items-center justify-center mx-auto"
+            style={{
+              background: 'linear-gradient(135deg, rgba(201,168,76,0.2) 0%, rgba(201,168,76,0.05) 100%)',
+              border: '1.5px solid rgba(201,168,76,0.4)',
+              boxShadow: '0 0 40px rgba(201,168,76,0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
+            }}
+          >
+            <span className="text-4xl sm:text-5xl">⚖️</span>
+          </div>
+          {/* Pulse ring */}
+          <motion.div
+            className="absolute inset-0 rounded-2xl"
+            animate={{ scale: [1, 1.15, 1], opacity: [0.4, 0, 0.4] }}
+            transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+            style={{ border: '1px solid rgba(201,168,76,0.4)' }}
+          />
         </motion.div>
 
+        {/* Headline */}
         <motion.h1
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4"
+          transition={{ delay: 0.2, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          className="text-3xl sm:text-5xl md:text-6xl font-bold mb-5 leading-tight"
           style={{ fontFamily: 'Playfair Display, serif', color: 'var(--text-primary)' }}
         >
           AI가 당신의{' '}
-          <span style={{ color: 'var(--accent-gold)' }}>법정</span>을 열다
+          <span
+            style={{
+              color: 'var(--accent-gold)',
+              textShadow: '0 0 30px rgba(201,168,76,0.4)',
+            }}
+          >
+            법정
+          </span>을 열다
         </motion.h1>
 
+        {/* Subheadline */}
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="text-base sm:text-lg max-w-xl mb-4"
+          transition={{ delay: 0.35, duration: 0.5 }}
+          className="text-sm sm:text-base md:text-lg max-w-lg mb-6 leading-relaxed"
           style={{ color: 'var(--text-secondary)' }}
         >
           AI 판사·검사·변호사가 실제 법정처럼 당신의 사건을 심리합니다.
+          <br className="hidden sm:block" />
           법률 상담부터 가상 재판까지, 재판 결과를 미리 예측하세요.
         </motion.p>
 
+        {/* Feature pills */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
-          className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 mb-10 sm:mb-12 text-xs sm:text-sm"
+          transition={{ delay: 0.45 }}
+          className="flex flex-wrap items-center justify-center gap-2 mb-10"
+        >
+          {[
+            { icon: '✅', text: '무료 법률 상담' },
+            { icon: '⚔️', text: '가상 재판 시뮬레이션' },
+            { icon: '📄', text: '소송장 분석' },
+          ].map(({ icon, text }) => (
+            <span
+              key={text}
+              className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full"
+              style={{
+                background: 'var(--bg-card)',
+                border: '1px solid var(--border)',
+                color: 'var(--text-secondary)',
+              }}
+            >
+              <span>{icon}</span>
+              <span>{text}</span>
+            </span>
+          ))}
+        </motion.div>
+
+        {/* Mode selector label */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="text-xs mb-5 tracking-widest uppercase font-medium"
           style={{ color: 'var(--text-muted)' }}
         >
-          <span>✅ 무료 법률 상담</span>
-          <span className="hidden sm:inline">•</span>
-          <span>⚔️ 가상 재판 시뮬레이션</span>
-          <span className="hidden sm:inline">•</span>
-          <span>📄 소송장 분석</span>
-        </motion.div>
+          — 원하는 서비스를 선택하세요 —
+        </motion.p>
 
         {/* Mode cards */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="w-full"
-        >
-          <p className="text-sm mb-6" style={{ color: 'var(--text-muted)' }}>
-            원하는 서비스를 선택하세요
-          </p>
-          <ModeSelector onSelect={onStart} />
-        </motion.div>
+        <ModeSelector onSelect={onStart} />
 
-        {/* Stats */}
+        {/* Stats bar */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.8 }}
-          className="flex gap-6 sm:gap-8 mt-12 sm:mt-16 text-center"
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.85 }}
+          className="flex items-stretch mt-12 rounded-2xl overflow-hidden"
+          style={{
+            background: 'var(--bg-card)',
+            border: '1px solid var(--border)',
+            boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
+          }}
         >
           {[
             { value: 'GPT-4o', label: 'AI 엔진' },
-            { value: '7라운드', label: '재판 진행' },
-            { value: '3인', label: '법정 역할' },
-            { value: '8개', label: '법률 분야' },
-          ].map(stat => (
-            <div key={stat.label}>
-              <div className="text-lg sm:text-xl font-bold" style={{ color: 'var(--accent-gold)' }}>{stat.value}</div>
-              <div className="text-xs" style={{ color: 'var(--text-muted)' }}>{stat.label}</div>
+            { value: '7라운드', numericValue: 7, label: '재판 진행' },
+            { value: '3인', numericValue: 3, label: '법정 역할' },
+            { value: '8개', numericValue: 8, label: '법률 분야' },
+          ].map((stat, i, arr) => (
+            <div key={stat.label} className="flex items-center">
+              <div className="px-5 py-4">
+                <StatItem {...stat} index={i} />
+              </div>
+              {i < arr.length - 1 && (
+                <div className="self-stretch w-px" style={{ background: 'var(--border)' }} />
+              )}
             </div>
           ))}
         </motion.div>
       </div>
 
       {/* Footer */}
-      <footer className="text-center py-4 text-xs border-t" style={{ borderColor: 'var(--border)', color: 'var(--text-muted)' }}>
+      <footer className="relative text-center py-4 text-xs border-t" style={{ borderColor: 'var(--border)', color: 'var(--text-muted)' }}>
         ⚠️ AI Court는 법률 정보 제공 목적이며 실제 법률 자문이 아닙니다. 중요한 법적 문제는 변호사와 상담하세요.
       </footer>
     </div>

@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Send, RotateCcw, Gavel } from 'lucide-react'
 import { MessageBubble } from '@/components/MessageBubble'
+import { ShareButton } from '@/components/ShareButton'
 import { quickConsult } from '@/services/openai'
 import type { Message, LegalCategory } from '@/types'
 import { LEGAL_CATEGORIES } from '@/types'
@@ -72,13 +73,16 @@ export function QuickConsultPage() {
           <h2 className="font-bold text-lg" style={{ color: 'var(--accent-gold)' }}>⚡ 빠른 법률 상담</h2>
           <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>AI 판사가 핵심 법률 요점을 즉시 정리합니다</p>
         </div>
-        <button
-          onClick={() => setMessages([])}
-          className="p-2 rounded-lg hover:bg-white/5 transition-colors"
-          title="대화 초기화"
-        >
-          <RotateCcw size={16} style={{ color: 'var(--text-muted)' }} />
-        </button>
+        <div className="flex items-center gap-2">
+          {messages.length > 0 && <ShareButton text="AI Court에서 법률 상담을 받았어요! 무료로 체험해보세요." />}
+          <button
+            onClick={() => setMessages([])}
+            className="p-2 rounded-lg hover:bg-white/5 transition-colors"
+            title="대화 초기화"
+          >
+            <RotateCcw size={16} style={{ color: 'var(--text-muted)' }} />
+          </button>
+        </div>
       </div>
 
       {/* Messages */}

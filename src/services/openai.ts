@@ -1,5 +1,6 @@
 // AI Court - OpenAI API Service (via Cloudflare Functions in prod, direct in dev)
 import type { Message, RoleType, LegalCategory, CaseType } from '@/types'
+import type { VerdictAnalysis } from '@/components/VerdictCard'
 
 // System prompts for each role
 const JUDGE_PROMPT = `당신은 대한민국 법원의 공정하고 권위 있는 판사입니다.
@@ -236,4 +237,97 @@ async function streamOpenAI(
     }
   }
   onChunk('', true)
+}
+
+// Structured verdict analysis (non-streaming, JSON mode)
+export async function analyzeVerdict(
+  messages: Message[],
+  caseType: CaseType
+): Promise<VerdictAnalysis> {
+  const isDev = import.meta.env.DEV
+  const apiKey = import.meta.env.VITE_OPENAI_API_KEY
+
+  let endpoint: string
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  }
+
+  if (isDev && apiKey) {
+    endpoint = 'https://api.openai.com/v1/chat/completions'
+    headers['Authorization'] = `Bearer ${apiKey}`
+  } else {
+    endpoint = '/api/chat'
+  }
+
+  const trialSummary = messages
+    .map(m => {
+      const roleLabel = m.role === 'judge' ? '판사' : m.role === 'prosecutor' ? '검사/원고' : '변호사/피고'
+      return `[${roleLabel}]: ${m.content}`
+    })
+    .join('\n')
+
+  const analysisPrompt = `아래 재판 기록을 분석하여 정확히 다음 JSON 형식으로만 응답하세요. 다른 텍스트 없이 오직 JSON만 출력하세요.
+
+{
+  "ruling": "원고 승소" 또는 "피고 승소" 또는 "원고 일부 승소" 또는 "피고 일부 승소",
+  "confidence": 0~100 사이의 숫자 (원고 기준 승소 가능성),
+  "favorability": "plaintiff" 또는 "defendant" 또는 "neutral",
+  "keyFactors": ["핵심 쟁점 1", "핵심 쟁점 2", "핵심 쟁점 3"],
+  "plaintiffStrengths": ["원고에게 유리한 점 1", "원고에게 유리한 점 2"],
+  "defendantStrengths": ["피고에게 유리한 점 1", "피고에게 유리한 점 2"],
+  "recommendation": "당사자들에 대한 최종 권고사항을 한 문단으로"
+}
+
+사건 유형: ${caseType === 'civil' ? '민사' : '형사'}
+
+재판 기록:
+${trialSummary}`
+
+  try {
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        model: 'gpt-4o',
+        messages: [
+          { role: 'system', content: '당신은 법률 분석 AI입니다. 반드시 요청된 JSON 형식으로만 응답하세요.' },
+          { role: 'user', content: analysisPrompt }
+        ],
+        max_tokens: 800,
+        temperature: 0.3,
+        response_format: { type: 'json_object' },
+      }),
+    })
+
+    if (!response.ok) {
+      throw new Error(`API 오류: ${response.status}`)
+    }
+
+    const data = await response.json()
+    const content = data.choices?.[0]?.message?.content || '{}'
+    const parsed = JSON.parse(content) as VerdictAnalysis
+
+    // Validate and fill defaults
+    return {
+      ruling: parsed.ruling || '판결 불가',
+      confidence: Math.min(100, Math.max(0, parsed.confidence || 50)),
+      favorability: parsed.favorability || 'neutral',
+      keyFactors: parsed.keyFactors || [],
+      plaintiffStrengths: parsed.plaintiffStrengths || [],
+      defendantStrengths: parsed.defendantStrengths || [],
+      recommendation: parsed.recommendation || '전문 변호사 상담을 권장합니다.',
+    }
+  } catch (err) {
+    console.error('Verdict analysis error:', err)
+    // Return a safe fallback
+    return {
+      ruling: '분석 실패',
+      confidence: 50,
+      favorability: 'neutral',
+      keyFactors: ['분석 중 오류 발생'],
+      plaintiffStrengths: [],
+      defendantStrengths: [],
+      recommendation: '판결 분석에 실패했습니다. 위의 판결문 텍스트를 참고해주세요.',
+    }
+  }
 }

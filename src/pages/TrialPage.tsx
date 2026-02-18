@@ -2,8 +2,10 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Play, RotateCcw, Gavel, ChevronRight } from 'lucide-react'
 import { MessageBubble } from '@/components/MessageBubble'
+import { CourtRoom } from '@/components/CourtRoom'
 import { ShareButton } from '@/components/ShareButton'
-import { runTrialRound } from '@/services/openai'
+import { VerdictCard, type VerdictAnalysis } from '@/components/VerdictCard'
+import { runTrialRound, analyzeVerdict } from '@/services/openai'
 import type { Message, CaseType } from '@/types'
 
 interface TrialSetup {
@@ -32,9 +34,12 @@ export function TrialPage() {
   })
   const [messages, setMessages] = useState<Message[]>([])
   const [round, setRound] = useState(1)
+  const [activeRole, setActiveRole] = useState<'judge' | 'prosecutor' | 'defense' | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [isFinished, setIsFinished] = useState(false)
   const [autoPlay, setAutoPlay] = useState(true)
+  const [verdictAnalysis, setVerdictAnalysis] = useState<VerdictAnalysis | null>(null)
+  const [isAnalyzing, setIsAnalyzing] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -56,6 +61,7 @@ export function TrialPage() {
       4: 'judge', 5: 'prosecutor', 6: 'defense', 7: 'judge',
     }
     const role = roleMap[currentRound] || 'judge'
+    setActiveRole(role)
 
     const streamingMsg: Message = {
       id: streamingId,
@@ -83,6 +89,14 @@ export function TrialPage() {
             setIsLoading(false)
             if (currentRound >= 7) {
               setIsFinished(true)
+              // Auto-trigger structured verdict analysis
+              setIsAnalyzing(true)
+              setMessages(prev => {
+                analyzeVerdict(prev, setup.caseType)
+                  .then(result => setVerdictAnalysis(result))
+                  .finally(() => setIsAnalyzing(false))
+                return prev
+              })
             } else {
               const nextRound = currentRound + 1
               setRound(nextRound)
@@ -126,6 +140,9 @@ export function TrialPage() {
     setRound(1)
     setIsFinished(false)
     setAutoPlay(true)
+    setActiveRole(null)
+    setVerdictAnalysis(null)
+    setIsAnalyzing(false)
     setSetup({ plaintiffSide: '', defendantSide: '', caseType: 'civil' })
   }
 
@@ -312,20 +329,16 @@ export function TrialPage() {
         />
       </div>
 
-      {/* Role indicators */}
-      <div className="flex border-b px-4 py-2 gap-4" style={{ borderColor: 'var(--border)' }}>
-        {[
-          { color: '#ef4444', dot: 'bg-red-500', label: '검사/원고' },
-          { color: '#c9a84c', dot: 'bg-yellow-500', label: '판사' },
-          { color: '#3b82f6', dot: 'bg-blue-500', label: '변호사/피고' },
-        ].map(r => (
-          <div key={r.label} className="flex items-center gap-1 text-xs" style={{ color: r.color }}>
-            <div className={`w-1.5 h-1.5 rounded-full ${r.dot}`} />
-            {r.label}
-          </div>
-        ))}
-        {!isFinished && round <= 7 && (
-          <div className="ml-auto flex items-center gap-2">
+      {/* Courtroom visual */}
+      <CourtRoom activeRole={activeRole} currentRound={round > 7 ? 7 : round} isLoading={isLoading} />
+
+      {/* Auto-play & round info */}
+      <div className="flex items-center justify-between px-4 py-1.5 border-b" style={{ borderColor: 'var(--border)', background: 'var(--bg-secondary)' }}>
+        {!isFinished && round <= 7 ? (
+          <>
+            <div className="text-xs px-2 py-0.5 rounded" style={{ background: 'rgba(201,168,76,0.1)', color: 'var(--accent-gold)', border: '1px solid rgba(201,168,76,0.2)' }}>
+              다음: {ROUND_LABELS[round]?.label}
+            </div>
             <button
               onClick={() => setAutoPlay(!autoPlay)}
               className="text-xs px-2 py-0.5 rounded transition-all"
@@ -337,10 +350,11 @@ export function TrialPage() {
             >
               {autoPlay ? '▶ 자동' : '⏸ 수동'}
             </button>
-            <div className="text-xs px-2 py-0.5 rounded" style={{ background: 'rgba(201,168,76,0.1)', color: 'var(--accent-gold)', border: '1px solid rgba(201,168,76,0.2)' }}>
-              다음: {ROUND_LABELS[round]?.label}
-            </div>
-          </div>
+          </>
+        ) : (
+          <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
+            {isFinished ? '재판 종결' : '재판 진행 중'}
+          </span>
         )}
       </div>
 
@@ -351,6 +365,24 @@ export function TrialPage() {
             <MessageBubble key={msg.id} message={msg} index={i} />
           ))}
         </AnimatePresence>
+        {/* Verdict Analysis Card */}
+        {isFinished && (isAnalyzing || verdictAnalysis) && (
+          <div className="px-2 py-4">
+            {isAnalyzing ? (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-center py-8"
+              >
+                <div className="text-3xl mb-3 animate-pulse">⚖️</div>
+                <p className="text-sm" style={{ color: 'var(--accent-gold)' }}>판결을 분석하고 있습니다...</p>
+                <p className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>AI가 승소 확률과 핵심 쟁점을 정리합니다</p>
+              </motion.div>
+            ) : verdictAnalysis && (
+              <VerdictCard analysis={verdictAnalysis} />
+            )}
+          </div>
+        )}
         <div ref={bottomRef} />
       </div>
 

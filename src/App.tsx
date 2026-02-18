@@ -84,34 +84,34 @@ function LandingHero({ onStart, theme, onToggleTheme }: {
       {/* Background ambient orbs */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden>
         <div
-          className="absolute w-[600px] h-[600px] rounded-full mix-blend-screen opacity-10 blur-3xl"
+          className="absolute w-[600px] h-[600px] rounded-full mix-blend-screen opacity-[0.03] blur-[100px]"
           style={{
-            top: '-20%', left: '-10%',
+            top: '-30%', left: '30%',
             background: 'radial-gradient(circle, var(--accent-gold) 0%, transparent 70%)',
             animation: 'float 8s ease-in-out infinite',
           }}
         />
         <div
-          className="absolute w-[500px] h-[500px] rounded-full mix-blend-screen opacity-10 blur-3xl"
+          className="absolute w-[500px] h-[500px] rounded-full mix-blend-screen opacity-[0.03] blur-[100px]"
           style={{
-            bottom: '10%', right: '-15%',
+            bottom: '-10%', right: '20%',
             background: 'radial-gradient(circle, var(--defense) 0%, transparent 70%)',
             animation: 'float 10s ease-in-out 2s infinite reverse',
           }}
         />
         {/* Subtle grid pattern */}
         <div
-          className="absolute inset-0 opacity-[0.03]"
+          className="absolute inset-0 opacity-[0.02]"
           style={{
             backgroundImage: 'linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px)',
             backgroundSize: '40px 40px',
-            maskImage: 'radial-gradient(ellipse at center, black 40%, transparent 100%)',
+            maskImage: 'radial-gradient(ellipse at center, black 50%, transparent 100%)',
           }}
         />
       </div>
 
       {/* Top nav */}
-      <nav className="relative flex items-center justify-between px-6 py-5 z-20">
+      <nav className="relative flex items-center justify-between px-6 lg:px-12 py-5 z-20 max-w-[1600px] mx-auto w-full">
         <div className="flex items-center gap-3">
           <motion.div
             className="w-8 h-8 rounded-lg flex items-center justify-center"
@@ -139,7 +139,7 @@ function LandingHero({ onStart, theme, onToggleTheme }: {
       </nav>
 
       {/* Hero Content */}
-      <div className="relative flex-1 flex flex-col items-center justify-center px-4 pb-12 z-10 w-full max-w-5xl mx-auto">
+      <div className="relative flex-1 flex flex-col items-center justify-center px-6 lg:px-12 pb-16 z-10 w-full max-w-[1400px] mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -147,27 +147,28 @@ function LandingHero({ onStart, theme, onToggleTheme }: {
           className="text-center w-full"
         >
           {/* Animated Icon Box */}
-          <div className="relative w-28 h-28 mx-auto mb-8">
-            <motion.div
-              className="absolute inset-0 rounded-3xl"
-              style={{
-                background: 'linear-gradient(135deg, rgba(201,168,76,0.2), rgba(201,168,76,0.05))',
-                border: '1px solid rgba(201,168,76,0.3)',
-                boxShadow: '0 0 40px rgba(201,168,76,0.15)',
-              }}
-              animate={{ rotate: [0, 5, -5, 0] }}
-              transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-            />
-            {/* Spinning Ring */}
-            <div className="absolute inset-[-4px] rounded-[28px] border border-[rgba(201,168,76,0.2)] animate-[spin_10s_linear_infinite]" />
-            <div className="absolute inset-0 flex items-center justify-center text-5xl filter drop-shadow-lg">
-              ⚖️
+          <div className="flex justify-center mb-8">
+            <div className="relative w-24 h-24 sm:w-28 sm:h-28">
+              <motion.div
+                className="absolute inset-0 rounded-3xl"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(201,168,76,0.2), rgba(201,168,76,0.05))',
+                  border: '1px solid rgba(201,168,76,0.3)',
+                  boxShadow: '0 0 40px rgba(201,168,76,0.15)',
+                }}
+                animate={{ rotate: [0, 5, -5, 0] }}
+                transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+              />
+              <div className="absolute inset-[-4px] rounded-[28px] border border-[rgba(201,168,76,0.2)] animate-[spin_10s_linear_infinite]" />
+              <div className="absolute inset-0 flex items-center justify-center text-4xl sm:text-5xl filter drop-shadow-lg">
+                ⚖️
+              </div>
             </div>
           </div>
 
           {/* Typography */}
-          <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold mb-6 tracking-tight leading-[1.1]" style={{ fontFamily: 'Playfair Display, serif' }}>
-            <span className="block text-[var(--accent-gold)] relative inline-block">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 tracking-tight leading-[1.15]" style={{ fontFamily: 'Playfair Display, serif' }}>
+            <span className="text-[var(--accent-gold)] relative">
               AI 법정
               <svg className="absolute -bottom-2 left-0 w-full h-3 text-[var(--accent-gold)] opacity-30" viewBox="0 0 100 10" preserveAspectRatio="none">
                 <path d="M0 5 Q 50 10 100 5 L 100 0 Q 50 5 0 0 Z" fill="currentColor" />
@@ -176,14 +177,14 @@ function LandingHero({ onStart, theme, onToggleTheme }: {
             <span className="text-[var(--text-primary)]">이 시작됩니다</span>
           </h1>
 
-          <p className="text-sm sm:text-lg text-[var(--text-secondary)] mb-10 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-sm sm:text-base lg:text-lg text-[var(--text-secondary)] mb-12 max-w-2xl mx-auto leading-relaxed">
             최신 AI 기술로 구현된 가상 법정 시뮬레이션.<br className="hidden sm:block"/>
             당신의 사건을 입력하고 <span className="text-[var(--accent-gold)] font-medium">7라운드 심리 과정</span>을 직접 경험하세요.
           </p>
 
           {/* Mode Selector Section */}
-          <div className="w-full max-w-4xl mx-auto">
-            <div className="flex items-center gap-4 mb-6">
+          <div className="w-full">
+            <div className="flex items-center gap-4 mb-8 max-w-md mx-auto">
               <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[var(--border)] to-transparent" />
               <span className="text-xs font-semibold tracking-widest text-[var(--accent-gold)] uppercase">Select Mode</span>
               <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[var(--border)] to-transparent" />
@@ -196,7 +197,7 @@ function LandingHero({ onStart, theme, onToggleTheme }: {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 }}
-              className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4"
+              className="mt-14 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto"
             >
               {[
                 { label: 'AI 엔진', value: 'GPT-4o' },

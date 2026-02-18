@@ -53,10 +53,9 @@ const MODES = [
 
 export function ModeSelector({ onSelect }: ModeSelectorProps) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-5 w-full max-w-5xl mx-auto px-2">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-6xl mx-auto px-4">
       {MODES.map((mode, i) => {
         const Icon = mode.icon
-        const isTrial = mode.id === 'trial'
         
         return (
           <motion.button
@@ -70,7 +69,7 @@ export function ModeSelector({ onSelect }: ModeSelectorProps) {
             }}
             whileTap={{ scale: 0.98 }}
             onClick={() => onSelect(mode.id)}
-            className={`relative text-center p-6 rounded-2xl border cursor-pointer group overflow-hidden flex flex-col items-center h-full ${isTrial ? 'md:-mt-4 md:mb-4 md:scale-105 z-10' : ''}`}
+            className={`relative text-center p-6 rounded-2xl border cursor-pointer group overflow-hidden flex flex-col items-center h-full`}
             style={{
               background: mode.bgGradient,
               borderColor: mode.borderColor,

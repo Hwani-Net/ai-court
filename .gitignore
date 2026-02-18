@@ -22,3 +22,12 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Test screenshots (root-level only, keep public/ assets)
+/*.png
+/*.jpg
+/*.jpeg
+
+# Playwright MCP temp files
+.playwright-mcp/
+landing_snapshot.md

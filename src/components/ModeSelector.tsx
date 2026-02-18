@@ -70,7 +70,7 @@ export function ModeSelector({ onSelect }: ModeSelectorProps) {
             }}
             whileTap={{ scale: 0.98 }}
             onClick={() => onSelect(mode.id)}
-            className={`relative text-left p-6 rounded-2xl border cursor-pointer group overflow-hidden flex flex-col h-full ${isTrial ? 'md:-mt-4 md:mb-4 md:scale-105 z-10' : ''}`}
+            className={`relative text-center p-6 rounded-2xl border cursor-pointer group overflow-hidden flex flex-col items-center h-full ${isTrial ? 'md:-mt-4 md:mb-4 md:scale-105 z-10' : ''}`}
             style={{
               background: mode.bgGradient,
               borderColor: mode.borderColor,
@@ -85,27 +85,27 @@ export function ModeSelector({ onSelect }: ModeSelectorProps) {
               }}
             />
 
-            {/* Icon & Badge */}
-            <div className="flex items-start justify-between mb-5 relative">
+            {/* Top row: icon + badge */}
+            <div className="flex flex-col items-center gap-4 mb-5 relative w-full">
+              <span className={`${mode.badgeClass} self-center`}>
+                {mode.badge}
+              </span>
               <div
-                className="w-12 h-12 rounded-xl flex items-center justify-center transition-transform duration-500 group-hover:rotate-12 group-hover:scale-110"
+                className="w-14 h-14 rounded-2xl flex items-center justify-center transition-transform duration-500 group-hover:rotate-12 group-hover:scale-110"
                 style={{
                   background: `${mode.color}15`,
                   border: `1px solid ${mode.color}30`,
                   boxShadow: `0 4px 20px ${mode.color}15`,
                 }}
               >
-                <Icon size={24} style={{ color: mode.color }} />
+                <Icon size={28} style={{ color: mode.color }} />
               </div>
-              <span className={mode.badgeClass}>
-                {mode.badge}
-              </span>
             </div>
 
             {/* Content */}
-            <div className="relative flex-1">
+            <div className="relative flex-1 flex flex-col items-center">
               <h3
-                className="font-bold text-lg mb-1.5"
+                className="font-bold text-lg mb-2"
                 style={{ color: 'var(--text-primary)', fontFamily: 'Playfair Display, serif' }}
               >
                 {mode.title}
@@ -120,7 +120,7 @@ export function ModeSelector({ onSelect }: ModeSelectorProps) {
 
             {/* CTA */}
             <div
-              className="mt-6 flex items-center gap-2 text-xs font-bold uppercase tracking-wider relative pt-4 border-t border-[rgba(255,255,255,0.05)]"
+              className="mt-6 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-wider relative pt-4 w-full border-t border-[rgba(255,255,255,0.05)]"
               style={{ color: mode.color }}
             >
               <span>Start Now</span>

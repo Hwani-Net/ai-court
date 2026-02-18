@@ -102,18 +102,18 @@ export function DocumentPage() {
         <motion.div 
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex items-center gap-4 mb-8"
+          className="flex flex-col items-center gap-5 mb-10 text-center"
         >
-          <div className="w-14 h-14 rounded-2xl flex items-center justify-center relative overflow-hidden"
+          <div className="w-20 h-20 rounded-3xl flex items-center justify-center relative overflow-hidden shadow-2xl"
                style={{ background: 'linear-gradient(135deg, rgba(224,82,82,0.2), rgba(224,82,82,0.05))', border: '1px solid rgba(224,82,82,0.3)' }}>
-            <FileText size={28} className="text-[var(--prosecutor)] relative z-10" />
-            <div className="absolute inset-0 bg-[var(--prosecutor)] opacity-10 blur-md" />
+            <FileText size={36} className="text-[var(--prosecutor)] relative z-10" />
+            <div className="absolute inset-0 bg-[var(--prosecutor)] opacity-10 blur-xl" />
           </div>
           <div>
-            <h2 className="text-2xl font-bold mb-1" style={{ fontFamily: 'Playfair Display, serif' }}>
+            <h2 className="text-3xl font-bold mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>
               <span className="gradient-text-gold">소송장 분석</span>
             </h2>
-            <p className="text-sm text-[var(--text-secondary)]">
+            <p className="text-sm sm:text-base text-[var(--text-secondary)]">
               AI가 문서를 정밀 분석하여 <span className="text-[var(--accent-gold)] font-medium">유불리 조항</span>을 찾아냅니다
             </p>
           </div>

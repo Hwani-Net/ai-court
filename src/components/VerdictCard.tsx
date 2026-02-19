@@ -419,12 +419,17 @@ export function VerdictCard({ analysis, onDownloadPDF, onDownloadImage, isExport
         )}
       </div>
 
-      {/* Disclaimer */}
+      {/* Disclaimer — enhanced for trust/liability */}
       <div
-        className="px-5 py-2.5 text-[10px] text-center"
-        style={{ background: 'rgba(0,0,0,0.3)', color: 'rgba(255,255,255,0.2)', borderTop: '1px solid rgba(255,255,255,0.04)' }}
+        className="px-5 py-3 text-center"
+        style={{ background: 'rgba(201,168,76,0.06)', borderTop: '1px solid rgba(201,168,76,0.15)' }}
       >
-        ⚠️ AI 분석 결과이며 실제 법적 판결이 아닙니다. 전문 변호사 상담을 권장합니다.
+        <p className="text-[11px] font-medium mb-0.5" style={{ color: 'rgba(201,168,76,0.7)' }}>
+          ⚠️ 본 분석은 참고용 AI 시뮬레이션이며 실제 법원 판결이 아닙니다
+        </p>
+        <p className="text-[10px]" style={{ color: 'rgba(255,255,255,0.3)' }}>
+          승소 확률은 유사 사례 기반 추정치입니다. 실제 소송 전 반드시 전문 변호사와 상담하세요.
+        </p>
       </div>
     </motion.div>
   )

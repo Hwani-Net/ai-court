@@ -6,6 +6,8 @@ import { ShareButton } from '@/components/ShareButton'
 import { analyzeDocument } from '@/services/openai'
 import type { Message } from '@/types'
 import { trackDocumentUpload, trackDocumentAnalyzeStart, trackDocumentAnalyzeComplete } from '@/utils/analytics'
+import { canUseFeature, consumeUsage } from '@/utils/usageLimit'
+import { UsageLimitModal } from '@/components/UsageLimitModal'
 
 export function DocumentPage() {
   const [file, setFile] = useState<File | null>(null)
@@ -58,8 +60,17 @@ export function DocumentPage() {
     if (droppedFile) handleFileUpload(droppedFile)
   }, [handleFileUpload])
 
+  const [showLimitModal, setShowLimitModal] = useState(false)
+
   const handleAnalyze = useCallback(async () => {
     if (!extractedText.trim() || isAnalyzing) return
+
+    // Check daily usage limit
+    if (!canUseFeature('document')) {
+      setShowLimitModal(true)
+      return
+    }
+
     setIsAnalyzing(true)
     setMessages([])
     trackDocumentAnalyzeStart()
@@ -82,6 +93,7 @@ export function DocumentPage() {
           )
           setIsAnalyzing(false)
           trackDocumentAnalyzeComplete()
+          consumeUsage('document')
         } else {
           setMessages(prev =>
             prev.map(m => m.id === streamingId ? { ...m, content: m.content + content } : m)
@@ -315,6 +327,13 @@ export function DocumentPage() {
           </motion.div>
         )}
       </div>
+
+      {/* Usage limit modal */}
+      <UsageLimitModal
+        isOpen={showLimitModal}
+        onClose={() => setShowLimitModal(false)}
+        feature="document"
+      />
     </div>
   )
 }

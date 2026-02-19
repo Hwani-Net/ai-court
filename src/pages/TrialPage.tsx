@@ -9,6 +9,8 @@ import { runTrialRound, analyzeVerdict } from '@/services/openai'
 import { usePDFExport } from '@/hooks/usePDFExport'
 import type { Message, CaseType } from '@/types'
 import { trackTrialStart, trackTrialRound, trackTrialComplete } from '@/utils/analytics'
+import { canUseFeature, consumeUsage } from '@/utils/usageLimit'
+import { UsageLimitModal } from '@/components/UsageLimitModal'
 
 interface TrialSetup {
   plaintiffSide: string
@@ -49,8 +51,17 @@ export function TrialPage() {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
+  const [showLimitModal, setShowLimitModal] = useState(false)
+
   const startTrial = useCallback(async () => {
     if (!setup.plaintiffSide.trim() || !setup.defendantSide.trim()) return
+
+    // Check daily usage limit
+    if (!canUseFeature('trial')) {
+      setShowLimitModal(true)
+      return
+    }
+
     setPhase('trial')
     trackTrialStart(setup.caseType)
     await runRound(1)
@@ -95,6 +106,7 @@ export function TrialPage() {
             if (currentRound >= 7) {
               setIsFinished(true)
               trackTrialComplete(setup.caseType)
+              consumeUsage('trial')
               // Auto-trigger structured verdict analysis
               setIsAnalyzing(true)
               setMessages(prev => {
@@ -525,7 +537,14 @@ export function TrialPage() {
             )}
           </motion.button>
         )}
-      </div>
+    </div>
+
+      {/* Usage limit modal */}
+      <UsageLimitModal
+        isOpen={showLimitModal}
+        onClose={() => setShowLimitModal(false)}
+        feature="trial"
+      />
     </div>
   )
 }

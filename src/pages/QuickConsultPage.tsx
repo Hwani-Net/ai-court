@@ -7,6 +7,8 @@ import { quickConsult } from '@/services/openai'
 import type { Message, LegalCategory } from '@/types'
 import { LEGAL_CATEGORIES } from '@/types'
 import { trackQuickConsultStart, trackQuickConsultComplete } from '@/utils/analytics'
+import { canUseFeature, consumeUsage, getRemainingUses } from '@/utils/usageLimit'
+import { UsageLimitModal } from '@/components/UsageLimitModal'
 
 // Category emoji map
 const CATEGORY_EMOJI: Record<LegalCategory, string> = {
@@ -55,6 +57,12 @@ export function QuickConsultPage() {
     const cat = overrideCategory ?? category
     if (!query || isLoading) return
 
+    // Check daily usage limit
+    if (!canUseFeature('quickConsult')) {
+      setShowLimitModal(true)
+      return
+    }
+
     const userMsg: Message = {
       id: Date.now().toString(),
       role: 'user',
@@ -84,6 +92,7 @@ export function QuickConsultPage() {
           )
           setIsLoading(false)
           trackQuickConsultComplete(cat)
+          consumeUsage('quickConsult')
         } else {
           setMessages(prev =>
             prev.map(m => m.id === streamingId ? { ...m, content: m.content + content } : m)
@@ -104,6 +113,8 @@ export function QuickConsultPage() {
 
   const charCount = input.length
   const maxChars = 500
+  const [showLimitModal, setShowLimitModal] = useState(false)
+  const remaining = getRemainingUses('quickConsult')
 
   return (
     <div className="flex flex-col h-full">
@@ -367,10 +378,17 @@ export function QuickConsultPage() {
         </div>
 
         <p className="text-[10px] mt-2" style={{ color: 'var(--text-muted)' }}>
-          ⚠️ 이 서비스는 법률 정보 제공 목적이며 실제 법률 자문이 아닙니다
+          ⚠️ 이 서비스는 법률 정보 제공 목적이며 실제 법률 자문이 아닙니다 · 오늘 남은 횟수: <span style={{ color: remaining === 0 ? 'var(--prosecutor)' : 'var(--accent-gold)', fontWeight: 'bold' }}>{remaining}/3</span>
         </p>
         </div>
       </div>
+
+      {/* Usage limit modal */}
+      <UsageLimitModal
+        isOpen={showLimitModal}
+        onClose={() => setShowLimitModal(false)}
+        feature="quickConsult"
+      />
     </div>
   )
 }
